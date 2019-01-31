@@ -1,0 +1,281 @@
+subroutine time_integration(np, nv, x, v, mat, h, &
+     mass, rho, p, u, c, s, e, prop, &
+     dt, steps, refresh_step, save_step, &
+     dtfluka, ofluka, dfluka, nfluka, tfluka, datafluka, &
+     pa_sph, nnps, sle, skf, density_method, &
+     average_velocity, virtual_part, visc, &
+     visc_artificial, heat_artificial, &
+     heat_external, self_gravity, filedir)
+
+!!$-------------------------------------------------------------------
+!!$ Subroutine for leapfrog time integration. The particle position, 
+!!$ velocity and energy is updated on the basis of the right hand side 
+!!$ of the momentum and energy equation as calculated by the 
+!!$ single_step subroutine
+!!$
+!!$ np-- particle number                                        [in]
+!!$ nv-- virtual particle number                                [in]
+!!$ x-- coordinates of particles                            [in/out]
+!!$ v-- velocities of particles                             [in/out]
+!!$ mat-- material type                                         [in]
+!!$ h-- smoothing lengths of particles                      [in/out]
+!!$ mass-- mass of particles                                    [in]
+!!$ rho-- densities of particles                            [in/out]
+!!$ p-- pressure  of particles                              [in/out]
+!!$ u-- internal energy of particles                        [in/out]
+!!$ c-- sound velocity of particles                            [out]
+!!$ s-- entropy of particles, not used here                    [out]
+!!$ e-- total energy of particles                              [out]
+!!$ prop-- material properties                                  [in]
+!!$ dt-- timestep                                               [in]
+!!$ steps-- maximum timesteps                                   [in]
+!!$ refresh_step-- timesteps between connectivity refreshing    [in]
+!!$ save_step-- timesteps between saves                         [in]
+!!$
+!!$ dtfluka-- deposition time for the binning                    [in]
+!!$ ofluka-- the origin of the binning                           [in]
+!!$ dfluka-- cell side of the binning                            [in]
+!!$ nfluka-- number of cells for each index                      [in]
+!!$ tfluka-- identifier for the fluka grid type                  [in]
+!!$ datafluka-- data of the binning                              [in]
+!!$	
+!!$ pa_sph -- SPH algorithm for particle approximation           [in]
+!!$ nnps -- Nearest neighbor particle searching method           [in]
+!!$ sle -- Smoothing kernel function                             [in]
+!!$ skf -- Smoothing kernel function                             [in]
+!!$ density_method -- Density calculation method                 [in]
+!!$ average_velocity                                             [in]
+!!$ virtual_part                                                 [in]
+!!$ visc                                                         [in]
+!!$ visc_artificial                                              [in]
+!!$ heat_artificial                                              [in]
+!!$ heat_external                                                [in]
+!!$ self_gravity                                                 [in]
+!!$ filedir -- Directory where the files are located             [in]
+
+
+
+  implicit none     
+  include 'options.inc'
+
+  integer np, nv, mat(maxn), steps, refresh_step, save_step
+  double precision x(dim, maxn), v(dim, maxn), h(maxn), &
+       mass(maxn), rho(maxn), p(maxn), u(maxn), &
+       c(maxn), s(maxn), e(maxn), prop(16,40), dt
+
+  double precision dtfluka
+  double precision ofluka(3), dfluka(3), datafluka(max_fluka)
+  integer nfluka(3), tfluka
+
+  integer pa_sph, nnps, sle, skf, density_method
+  logical average_velocity, virtual_part, visc, &
+       visc_artificial, heat_artificial, heat_external, self_gravity
+
+
+  integer niac
+  integer, dimension(:), allocatable :: pair_i, pair_j
+  integer, dimension(:), allocatable ::  index_ghost
+
+  double precision, dimension(:,:), allocatable :: dv0, dx, dv, av
+  double precision, dimension(:), allocatable ::  drho0, du0, du, drho, &
+       ds, t, tdsdt
+  character (len = *) :: filedir
+
+  double precision  time, ut, tt, mvt(dim)
+
+  integer i, j, k, its, d, ng, file_step
+
+
+  allocate(pair_i(max_interaction), pair_j(max_interaction))
+  allocate(index_ghost(maxn))
+
+  allocate(dv0(dim, maxn), dx(dim, maxn), dv(dim, maxn))
+  allocate(av(dim, maxn))
+  allocate(drho0(maxn), du0(maxn), du(maxn), drho(maxn))
+  allocate(ds(maxn), t(maxn), tdsdt(maxn))
+
+  file_step = 0 ! lucam
+  time = 0.0
+
+!!$-----------------------------------------------------------------
+!!$ Interaction parameters, calculating neighboring particles
+  ng = 0
+  if (nnps .eq. 0) then 
+     call direct_find(np +nv +ng, x, h, niac, pair_i, pair_j, skf)
+  else if (nnps .eq. 1) then
+     call link_list(np +nv +ng, x, h, niac, pair_i, pair_j, skf)
+  endif
+
+!!$ Calculating ghost particles
+  if (virtual_part) then
+     call ghost_particles(np, nv, ng, x, v, h, mass, rho, p, &
+          niac, pair_i, pair_j, index_ghost)
+  endif
+  
+  open(31,file='ghost.dat')
+  write(31,*) (i, index_ghost(i), i=1,np)
+  close(31)
+
+  if (nnps .eq. 0) then 
+     call direct_find(np +nv +ng, x, h, niac, pair_i, pair_j, skf)
+  else if (nnps .eq. 1) then
+     call link_list(np +nv +ng, x, h, niac, pair_i, pair_j, skf)
+  endif
+
+
+!!$ Regularize the density
+!!$  call nor_density(np, h, mass, rho, niac, pair_i, pair_j, w, &
+!!$       skf)
+
+  call ensightout_case(dt, steps, save_step, filedir)
+  call output(np, nv, x, v, mat, h, mass, rho, p, u, c, filedir)
+  call ensightout_results(np+nv, x, v, rho, p, u, file_step, filedir)
+
+  open(21, file = 'X.dat')
+  open(22, file = 'V.dat')
+  open(23, file = 'P.dat')
+
+!!$------------------------------------------------------------------
+  do its = 1, steps
+
+!!$ If not first time step, then update thermal energy, density and 
+!!$ velocity half a time step
+
+     if (its .ne. 1) then
+        do i = 1, np
+           du0(i) = du(i)
+           u(i) = u(i) + dt*du0(i)
+           
+!           if(u(i).lt.0)  u(i) = 0.
+           
+           if (density_method .eq. 0) then    
+              drho0(i) = drho(i)
+              rho(i) = rho(i) + dt * drho0(i)
+           endif
+
+           do d = 1, dim
+              dv0(d, i) = dv(d, i)
+              v(d, i) = v(d, i) + dt * dv0(d, i)
+              x(d, i) = x(d, i) + dt * (v(d, i) +av(d, i))!+ (dt*dt/2.) * dv0(d, i)
+           enddo
+        enddo
+
+     endif
+
+!!$ Calculating ghost particles
+     ng = 0
+     if (virtual_part) then
+        call ghost_particles(np, nv, ng, x, v, h, mass, rho, p, &
+             niac, pair_i, pair_j, index_ghost)
+     endif
+
+!!$ Interaction parameters, calculating neighboring particles
+     if (mod(its, refresh_step) .eq. 0) then
+        if (nnps .eq. 0) then 
+           call direct_find(np +nv +ng, x, h, &
+                niac, pair_i, pair_j, skf)
+        else if (nnps .eq. 1) then
+           call link_list(np +nv +ng, x, h, niac, pair_i, pair_j, skf)
+        endif
+     endif
+
+!!$ Definition of variables out of the function vector:
+
+     call single_step(np, nv, ng, x, v, mat, h, &
+          mass, rho, p, u, c, s, e, t, &
+          niac, pair_i, pair_j, index_ghost, &
+          dx, dv, drho, du, ds, tdsdt, av, prop, its, dt, &
+          dtfluka, ofluka, dfluka, nfluka, tfluka, datafluka, &
+          pa_sph, nnps, sle, skf, density_method, &
+          average_velocity, virtual_part, visc, &
+          visc_artificial, heat_artificial, &
+          heat_external, self_gravity)
+
+
+     if (its .ne. 1) then
+
+        do i = 1, np
+           u(i) = u(i) + (dt/2.) * (du(i) -du0(i))
+!           if(u(i).lt.0)  u(i) = 0.          
+
+           if (density_method .eq. 0) then
+              rho(i) = rho(i) + (dt/2.) * (drho(i) -drho0(i))
+           endif
+
+           do d = 1, dim
+              v(d, i) = v(d, i) + (dt/2.) * (dv(d, i) -dv0(d, i)) + av(d, i)
+           enddo
+        enddo
+
+     else
+
+        do i = 1, np
+           u(i) = u(i) + dt * du(i)
+!           if(u(i).lt.0)  u(i) = 0.
+
+           if (density_method .eq. 0) then
+              rho(i) = rho(i) + dt * drho(i)
+           endif
+
+           do d = 1, dim
+              v(d, i) = v(d, i) + dt* dv(d, i)
+              x(d, i) = x(d, i) + dt * (v(d, i) + av(d,i))! + (dt*dt/2.) * dv(d, i)
+           enddo
+        enddo
+
+     endif
+
+     time = time + dt
+     
+     ut = 0.0
+     tt = 0.0
+     do d = 1, dim
+        mvt(d) = 0.0
+     enddo
+
+     do i = 1, np
+        ut = ut + mass(i)*u(i)
+        do d = 1, dim
+           tt = tt + 0.5*mass(i)*v(d,i)*v(d,i)
+           mvt(d) = mvt(d) + mass(i) * v(d,i)
+        enddo
+     enddo
+     
+     write(21,*) time, x(1,1), x(1,26), x(1,51), x(1,76), x(1,101)
+     write(22,*) time, v(1,1), v(1,26), v(1,51), v(1,76), v(1,101)
+     write(23,*) time, p(1), p(26), p(51), p(76), p(101)
+     write(24,*) time, ut, tt, ut + tt
+     
+!!$     write(*,*)
+
+     if (mod(its, save_step) == 0) then
+        write(*,*)'______________________________________________'
+        write(*,*)'  current number of time step =', &
+             its,'     current time=', real(time +dt)
+        write(*,*)'______________________________________________'
+
+        call output(np, nv, x, v, mat, h, mass, rho, p, u, c, filedir)
+
+        file_step = file_step +1
+        call ensightout_results(np, x, v, rho, p, u, &
+             file_step, filedir)
+     endif
+
+  enddo
+
+  close(21)
+  close(22)
+  close(23)
+  close(24)
+  
+  call output(np, nv, x, v, mat, h, mass, rho, p, u, c, filedir)
+
+  deallocate(pair_i, pair_j)
+  deallocate(index_ghost)
+
+  deallocate(dv0, dx, dv)
+  deallocate(av)
+  deallocate(drho0, du0, du, drho)
+  deallocate(ds, t, tdsdt)
+
+end subroutine time_integration

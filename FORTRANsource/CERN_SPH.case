@@ -1,0 +1,41 @@
+# Ensight formatted case file for SPH CERN
+
+FORMAT
+type: ensight gold
+
+GEOMETRY
+model:    1          CERN_position_*****.geo
+
+VARIABLE
+vector per node:    1 velocity CERN_velocity_*****.dat
+scalar per node:    1 density  CERN_density_*****.dat
+scalar per node:    1 pressure CERN_pressure_*****.dat
+scalar per node:    1 energy   CERN_energy_*****.dat
+
+TIME
+time set:         1
+number of steps:        21
+filename start number:         0
+filename increment:         1
+time values:
+0.00000000E+000
+0.25000000E-004
+0.50000001E-004
+0.75000001E-004
+0.10000000E-003
+0.12500000E-003
+0.15000000E-003
+0.17500000E-003
+0.20000000E-003
+0.22500000E-003
+0.25000000E-003
+0.27500000E-003
+0.30000000E-003
+0.32500000E-003
+0.35000000E-003
+0.37500000E-003
+0.40000000E-003
+0.42500000E-003
+0.45000001E-003
+0.47500001E-003
+0.50000001E-003

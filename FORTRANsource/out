@@ -1,0 +1,412 @@
+av_vel.f90:subroutine av_vel(np, x, v, h, mass, rho, av, &
+av_vel.f90:!!$ np-- number of particles                                     [in]
+av_vel.f90:  integer np, niac, pair_i(max_interaction), pair_j(max_interaction)
+default.f90:subroutine default(filedir, pa_sph, nnps, sle, skf, &
+default.f90:!!$ nnps -- Nearest neighbor particle searching method           [out]
+default.f90:  integer pa_sph, nnps, sle, skf, density_method
+default.f90:!!$ Nearest neighbor particle searching (nnps) method
+default.f90:!!$ nnps = 0 : Simplest and direct searching
+default.f90:  nnps = 1
+density.f90:subroutine sum_density(np, x, h, mass, rho, niac, pair_i, pair_j, &
+density.f90:!!$ np-- number of particles                                     [in]
+density.f90:  integer np, niac, pair_i(max_interaction), pair_j(max_interaction)
+density.f90:  do i = 1, np
+density.f90:     if (i <= np) rho(i) = rho(i) + mass(j)*w
+density.f90:     if (j <= np) rho(j) = rho(j) + mass(i)*w
+density.f90:subroutine nor_density(np, x, h, mass, rho, niac, pair_i, pair_j, &
+density.f90:!!$ np-- number of particles                                     [in]
+density.f90:  integer np, niac, pair_i(max_interaction), pair_j(max_interaction)
+density.f90:  do i = 1, np
+density.f90:     if (i <= np) rn(i) = rn(i) + mass(j)*w
+density.f90:     if (j <= np) rn(j) = rn(j) + mass(i)*w
+density.f90:     if (i <= np) wn(i) = wn(i) + mass(j)/rho(j)*w
+density.f90:     if (j <= np) wn(j) = wn(j) + mass(i)/rho(i)*w
+density.f90:  do i = 1, np
+density.f90:subroutine con_density(np, x, v, h, mass, drho, &
+density.f90:!!$ np-- number of particles                                     [in]
+density.f90:  integer np, niac, pair_i(max_interaction), pair_j(max_interaction)
+density.f90:  do i = 1, np
+density.f90:     if (i <= np) drho(i) = drho(i) + mass(j) * vcc
+density.f90:     if (j <= np) drho(j) = drho(j) + mass(i) * vcc
+density.f90:subroutine unity(np, x, h, mass, rho, wn, niac, pair_i, pair_j, &
+density.f90:!!$ np-- number of particles                                     [in]
+density.f90:  integer np, niac, pair_i(max_interaction), pair_j(max_interaction)
+density.f90:  do i = 1, np
+density.f90:     if (i <= np) wn(i) = wn(i) + mass(j)/rho(j)*w
+density.f90:     if (j <= np) wn(j) = wn(j) + mass(i)/rho(i)*w
+ensight.f90:subroutine ensightout_results(np, x, v, rho, p, u, &
+ensight.f90:!!$ np-- total particle number                                    [in]
+ensight.f90:  integer np, file_step
+ensight.f90:  write(10,'(I10)') np
+ensight.f90:     do i = 1, np
+ensight.f90:     do i = 1, np
+ensight.f90:     do i = 1, np
+ensight.f90:     do i = 1, np
+ensight.f90:  do i = 1, np
+ensight.f90:  do i = 1, np
+ensight.f90:  do i = 1, np
+external_force.f90:subroutine ext_force(np, nv, x, v, h, dvdt, &
+external_force.f90:!!$  np-- number of real particles                                [in]
+external_force.f90:  integer np, nv, &
+external_force.f90:  do i = 1, np
+external_force.f90:     if ((j .gt. np) .and. (j .le. np +nv) .and. (i .le. np)) then
+external_force.f90:  do i = 1, np
+external_force.f90:subroutine ghost_force(np, nv, x, v, mat, h, &
+external_force.f90:!!$  np-- number of real particles                                [in]
+external_force.f90:  integer np, nv, mat(maxn), &
+external_force.f90:  do i = 1, np
+external_force.f90:     if ((i .lt. np) .and. (j .gt. np +nv)) then
+fluka_heat.f90:subroutine read_binning_bin(trfluka, sffluka, effluka, npfluka, &
+fluka_heat.f90:!!$ npfluka-- number of particles                                [in]
+fluka_heat.f90:  double precision trfluka(3), sffluka, effluka, npfluka, dtfluka, &
+fluka_heat.f90:        datafluka(i) = ((npfluka * effluka) / (dtfluka * sffluka**3)) &
+fluka_heat.f90:        datafluka(i) = ((npfluka * effluka) / (dtfluka * sffluka**3)) &
+fluka_heat.f90:subroutine read_binning_txt(trfluka, sffluka, effluka, npfluka, &
+fluka_heat.f90:!!$ npfluka-- number of particles                                [in]
+fluka_heat.f90:  double precision trfluka(3), sffluka, effluka, npfluka, dtfluka, &
+fluka_heat.f90:        datafluka(i) = ((npfluka * effluka) / (dtfluka * sffluka**3)) &
+fluka_heat.f90:        datafluka(i) = ((npfluka * effluka) / (dtfluka * sffluka**3)) &
+fluka_heat.f90:subroutine fluka_heat(np, x, rho, dedt, &
+fluka_heat.f90:!!$ np-- umber of particles                                      [in]
+fluka_heat.f90:  integer np
+fluka_heat.f90:     do ip = 1, np
+fluka_heat.f90:     do ip = 1, np
+ghost.f90:subroutine ghost_particles(np, nv, ng, x, v, h, mass, rho, p, &
+ghost.f90:!!$    np-- number of particles                                     [in]
+ghost.f90:  integer np, nv, ng
+ghost.f90:  do i = 1, np
+ghost.f90:     if (i <= np) then
+ghost.f90:        if ((j > np) .and. (j <= (np + nv))) then
+ghost.f90:  do i = 1, np
+ghost.f90:           x(d, np +nv +ng) = x(d, i) -2.0d0 * v(d, j) * dd1
+ghost.f90:           v(d, np +nv +ng) = v(d, i) -2.0d0 * v(d, j) * dd2
+ghost.f90:        mass(np +nv +ng) = mass(i)
+ghost.f90:        h(np +nv +ng) = h(i)
+ghost.f90:        rho(np +nv +ng) = rho(i)
+ghost.f90:        p(np +nv +ng) = p(i)
+ghost.f90:        index_ghost(i) = np +nv +ng
+input.f90:subroutine read_input_file(filedir, pa_sph, nnps, sle, skf, &
+input.f90:     npfluka, dtfluka)
+input.f90:!!$ Subroutine to read the input file, and set the options for the
+input.f90:!!$ nnps -- Nearest neighbor particle searching method          [out]
+input.f90:!!$ npfluka-- number of particles                               [out]
+input.f90:  integer pa_sph, nnps, sle, skf, density_method
+input.f90:  double precision trfluka(3), sffluka, effluka, npfluka, dtfluka
+input.f90:  filename = trim(filedir) // "input.sph"
+input.f90:     write(*,'(A)') 'ERROR OPENING input.sph'
+input.f90:     if (line(1:4) == 'NNPS') then 
+input.f90:        if ((intvalue >= 0) .and. (intvalue <2)) nnps = intvalue
+input.f90:     if (line(1:7) == 'NPFLUKA') then 
+input.f90:        if (doublevalue > 0.0) npfluka = doublevalue
+input.f90:end subroutine read_input_file
+input.f90:subroutine read_initial_conditions(np, x, v, mat, h, &
+input.f90:!!$ np-- total particle number                                   [out]
+input.f90:  integer np, mat(maxn)
+input.f90:  read (1,*) np
+input.f90:  do i = 1, np
+input.f90:  write(*,*)'      Total number of particles   ', np
+input.f90:subroutine read_virtual_particles(np, nv, x, v, mat, h, &
+input.f90:  integer np, nv, mat(maxn)
+input.f90:  do i = np +1, np +nv
+internal_force.f90:subroutine int_force(np, x, v, mat, h, &
+internal_force.f90:!!$  np-- number of real particles                                [in]
+internal_force.f90:  integer np, mat(maxn), &
+internal_force.f90:  do i = 1, np
+internal_force.f90:        if ((i .le. np) .and. (j .le. np)) then
+internal_force.f90:  do i = 1, np
+internal_force.f90:     if ((i .le. np) .and. (j .le. np)) then
+internal_force.f90:  do i = 1, np
+output.f90:subroutine output(np, nv, x, v, mat, h, mass, rho, p, u, c, &
+output.f90:!!$ np-- total particle number                                    [in]
+output.f90:  integer mat(maxn), np, nv
+output.f90:  write(1,*) np
+output.f90:  do i = 1, np
+output.f90:  do i = np +1, np +nv
+single_step.f90:subroutine single_step(np, nv, ng, x, v, mat, h, &
+single_step.f90:     pa_sph, nnps, sle, skf, density_method, &
+single_step.f90:!!$ np-- Number of particles                                     [in]
+single_step.f90:!!$ nnps -- Nearest neighbor particle searching method           [in]
+single_step.f90:  integer np, nv, ng, its, mat(maxn)
+single_step.f90:  integer pa_sph, nnps, sle, skf, density_method
+single_step.f90:  do i = 1, np
+single_step.f90:     call av_vel(np, x, v, h, mass, rho, av, &
+single_step.f90:  do i = 1, np
+single_step.f90:     call con_density(np, x, vm, h, mass, drho, &
+single_step.f90:     call sum_density(np, x, h, mass, rho, &
+single_step.f90:     call nor_density(np, x, h, mass, rho, &
+single_step.f90:!!$  call unity(np, x, h, mass, rho, one, &
+single_step.f90:!!$  do i = 1, np + nv + ng
+single_step.f90:  do i = 1, np
+single_step.f90:     do i = 1, np
+single_step.f90:  call int_force(np, x, v, mat, h, &
+single_step.f90:     call ext_force(np, nv, x, v, h, exdvdt, &
+single_step.f90:     call ghost_force(np, nv, x, v, mat, h, &
+single_step.f90:  if (visc_artificial) call art_visc(np, x, v, h, &
+single_step.f90:  if (heat_artificial) call art_heat(np, x, v, h, &
+single_step.f90:  if (average_velocity) call av_vel(np, x, v, h, mass, rho, av, &
+single_step.f90:     call fluka_heat(np, x, rho, exdudt, &
+single_step.f90:  if (sle .ne. 0) call h_upgrade(np, x, v, h, mass, rho, &
+single_step.f90:  do i = 1, np
+smooth.f90:subroutine smooth_particles(np, nv, x, v, h, mass, rho, &
+smooth.f90:!!$ np-- Number of particles                                     [in]
+smooth.f90:  integer np, nv
+smooth.f90:  call link_list(np +nv +ng, x, h, niac, pair_i, pair_j, 0)
+smooth.f90:!!$c	    call ghost_particles(np, nv, ng, x, v, h, mass, rho, phi, 
+smooth.f90:!!$c	  call link_list(np +nv +ng, x, h, niac, pair_i, pair_j,
+smooth.f90:!!$c	    if ((i .le. np) .and. 
+smooth.f90:!!$c     &      ((j .le. np) .or. (j .gt. (np +nv)))) then
+smooth.f90:!!$c	  do i = 1, np
+smooth.f90:!!$c	  do i = 1, np
+smooth.f90:!!$c	  do i = 1, np
+smooth.f90:!!$c	  do i = 1, np
+smooth.f90:  nits = np
+smooth.f90:  do i = 1, np
+smooth.f90:     if (i <= np) then
+smooth.f90:        if ((j > np) .and. (j <= (np + nv))) then
+smooth.f90:  do i = 1, np
+smooth.f90:           x(d, np +nv +ng) = x(d, i) -2.0d0 * v(d, j) * dd1
+smooth.f90:        h(np +nv +ng) = h(i)
+smooth.f90:        index_ghost(i) = np +nv +ng
+smooth.f90:  call link_list(np +nv +ng, x, h, niac, pair_i, pair_j, 0)
+smooth.f90:     do i = 1, np
+smooth.f90:     do i = 1, np +nv +ng
+smooth.f90:     call sum_density(np, x, h, mass, phi, &
+smooth.f90:     do i = 1, np
+sph.f90:!!$ np-- total particle number used                               [in]
+sph.f90:!!$ npfluka-- number of particles                                [in]
+sph.f90:!!$c     Nearest neighbor particle searching (nnps) method
+sph.f90:!!$c     nnps = 0 : Simplest and direct searching
+sph.f90:  integer pa_sph, nnps, sle, skf, density_method
+sph.f90:  integer np, nv, steps, refresh_step, save_step, d, m, i
+sph.f90:  double precision trfluka(3), sffluka, effluka, npfluka, dtfluka, &
+sph.f90:  np = 0
+sph.f90:  call default(filedir, pa_sph, nnps, sle, skf, density_method, &
+sph.f90:     call read_input_file(filedir, pa_sph, nnps, sle, skf, &
+sph.f90:          npfluka, dtfluka)
+sph.f90:     call shock_tube(np, x, v, mat, h, mass, rho, p, u)
+sph.f90:     nnps = 0
+sph.f90:!!$     call partly_heated_rod(np, x, v, mat, h, mass, rho, p, u)
+sph.f90:!!$     nnps = 0
+sph.f90:     call bullet(np, nv, x, v, mat, h, mass, rho, p, u)
+sph.f90:     nnps = 0
+sph.f90:!!$     call partly_heated_disc(np, nv, x, v, mat, h, mass, rho, p, u)
+sph.f90:!!$     nnps = 1
+sph.f90:!!$     call fluka_heated_disc(np, nv, x, v, mat, h, mass, rho, p, u)
+sph.f90:!!$     nnps = 1
+sph.f90:!!$     npfluka = 3.03d13
+sph.f90:!!$     call partly_heated_bar(np, nv, x, v, mat, h, mass, rho, p, u)
+sph.f90:!!$     nnps = 1
+sph.f90:!!$     call partly_heated_cylinder(np, nv, x, v, mat, h, mass, rho, p, u)
+sph.f90:!!$     nnps = 1
+sph.f90:     call shear_cavity(np, nv, x, v, mat, h, mass, rho, p, u)
+sph.f90:     call read_initial_conditions(np, x, v, mat, h, &
+sph.f90:        call read_virtual_particles(np, nv, x, v, mat, h, &
+sph.f90:     call read_binning_bin(trfluka, sffluka, effluka, npfluka, &
+sph.f90:     call smooth_particles(np, nv, x, v, h, mass, rho, &
+sph.f90:  call time_integration(np, nv, x, v, mat, h, &
+sph.f90:       pa_sph, nnps, sle, skf, density_method, &
+test_cases.f90:subroutine partly_heated_rod(np, x, v, mat, h, mass, rho, p, u)
+test_cases.f90:!!$ np-- particle number                                        [out]
+test_cases.f90:  integer np, nv, mat(maxn)
+test_cases.f90:  np = 800
+test_cases.f90:  dx = 1.0/np
+test_cases.f90:  do i = 1, np
+test_cases.f90:     mass(i) = 13540.0/np
+test_cases.f90:  do i = 1, np
+test_cases.f90:  do i = 1, np
+test_cases.f90:  write(*,*)'      Total number of particles   ', np
+test_cases.f90:subroutine bullet(np, nv, x, v, mat, h, &
+test_cases.f90:!!$ np-- particle number                                        [out]
+test_cases.f90:  integer np, nv, mat(maxn)
+test_cases.f90:  np = 100
+test_cases.f90:  dx = 1.0/np
+test_cases.f90:  do i = 1, np
+test_cases.f90:     mass(i) = 1000.0/np
+test_cases.f90:  do i = 1, np
+test_cases.f90:  x(1, np +1) = x(1,1) -dx
+test_cases.f90:  v(1, np +1) = 1.0
+test_cases.f90:  mass(np +1) = 0.0
+test_cases.f90:  h(np +1) = 0.0
+test_cases.f90:  mat(np +1) = 0
+test_cases.f90:!!$  x(1, np +2) = +0.5 !+0.5*dx
+test_cases.f90:!!$  v(1, np +2) = -1.0 !+0.5*dx
+test_cases.f90:!!$  do i = 1, np
+test_cases.f90:  write(*,*)'      Total number of particles   ', np
+test_cases.f90:subroutine partly_heated_rod_b(np, nv, x, v, mat, h, &
+test_cases.f90:!!$ np-- particle number                                        [out]
+test_cases.f90:  integer np, nv, mat(maxn)
+test_cases.f90:  np = 800
+test_cases.f90:  dx = 1.0/np
+test_cases.f90:  do i = 1, np + nv
+test_cases.f90:     mass(i) = 13540.0/np
+test_cases.f90:  do i = 1, np
+test_cases.f90:  x(1, np +1) = -0.5 !-0.5*dx
+test_cases.f90:  x(1, np +2) = +0.5 !+0.5*dx
+test_cases.f90:  do i = 1, np
+test_cases.f90:  write(*,*)'      Total number of particles   ', np
+test_cases.f90:subroutine partly_heated_disc(np, nv, x, v, mat, h, mass, &
+test_cases.f90:!!$ np-- particle number                                        [out]
+test_cases.f90:  integer np, nv, mat(maxn)
+test_cases.f90:  np = 0
+test_cases.f90:           np = np +1
+test_cases.f90:           x(1,np) = xp
+test_cases.f90:           x(2,np) = yp
+test_cases.f90:     x(1, np +i) = 0.05 * cos(2.0d0*pi/nv * i)
+test_cases.f90:     x(2, np +i) = 0.05 * sin(2.0d0*pi/nv * i)
+test_cases.f90:     v(1, np +i) = cos(2.0d0*pi/nv * i)
+test_cases.f90:     v(2, np +i) = sin(2.0d0*pi/nv * i)
+test_cases.f90:  do i = 1, np
+test_cases.f90:  do i = np +1, np +nv
+test_cases.f90:  do i = 1, np
+test_cases.f90:  write(*,*)'      Total number of particles   ', np
+test_cases.f90:subroutine partly_heated_bar(np, nv, x, v, mat, h, mass, &
+test_cases.f90:!!$ np-- particle number                                        [out]
+test_cases.f90:  integer np, nv, mat(maxn)
+test_cases.f90:  np = 0
+test_cases.f90:           np = np +1
+test_cases.f90:           x(1,np) = xp
+test_cases.f90:           x(2,np) = yp
+test_cases.f90:  do i = 1, np
+test_cases.f90:     x(1,np +nv) = xp
+test_cases.f90:     x(2,np +nv) = yp
+test_cases.f90:     v(1,np +nv) = vx
+test_cases.f90:     v(2,np +nv) = vy
+test_cases.f90:     x(1,np +nv) = xp
+test_cases.f90:     x(2,np +nv) = yp
+test_cases.f90:     v(1,np +nv) = vx
+test_cases.f90:     v(2,np +nv) = vy
+test_cases.f90:     x(1,np +nv) = xp
+test_cases.f90:     x(2,np +nv) = yp
+test_cases.f90:     v(1,np +nv) = -vy
+test_cases.f90:     v(2,np +nv) = vx
+test_cases.f90:  do i = np +1, np +nv
+test_cases.f90:  do i = 1, np
+test_cases.f90:!!$      do i = 1, np
+test_cases.f90:  write(*,*)'      Total number of particles   ', np
+test_cases.f90:subroutine partly_heated_cylinder(np, nv, x, v, mat, h, mass, &
+test_cases.f90:!!$ np-- particle number                                        [out]
+test_cases.f90:  integer np, nv, mat(maxn)
+test_cases.f90:  np = 0
+test_cases.f90:              np = np +1
+test_cases.f90:              x(1,np) = xp
+test_cases.f90:              x(2,np) = yp
+test_cases.f90:              x(3,np) = zp
+test_cases.f90:  do i = 1, np
+test_cases.f90:  do i = 1, np
+test_cases.f90:  write(*,*)'      Total number of particles   ', np
+test_cases.f90:subroutine fluka_heated_disc(np, nv, x, v, mat, h, mass, &
+test_cases.f90:!!$ np-- particle number                                        [out]
+test_cases.f90:  integer np, nv, mat(maxn)
+test_cases.f90:  np = 0
+test_cases.f90:           np = np +1
+test_cases.f90:           x(1,np) = xp
+test_cases.f90:           x(2,np) = yp
+test_cases.f90:     x(1, np +i) = 0.03 * cos(2.0d0*pi/nv * i)
+test_cases.f90:     x(2, np +i) = 0.03 * sin(2.0d0*pi/nv * i)
+test_cases.f90:     v(1, np +i) = cos(2.0d0*pi/nv * i)
+test_cases.f90:     v(2, np +i) = sin(2.0d0*pi/nv * i)
+test_cases.f90:  do i = 1, np
+test_cases.f90:  do i = np +1, np +nv
+test_cases.f90:  write(*,*)'      Total number of particles   ', np
+test_cases.f90:subroutine shock_tube(np, x, v, mat, h, mass, rho, p, u)
+test_cases.f90:!!$ np-- particle number                                        [out]
+test_cases.f90:  integer np, nv, mat(maxn)
+test_cases.f90:  np = 400
+test_cases.f90:  do i = 1, np
+test_cases.f90:  do i = 320+1, np
+test_cases.f90:  do i = 1, np
+test_cases.f90:  write(*,*)'      Total number of particles   ', np
+test_cases.f90:subroutine shear_cavity(np, nv, x, v, mat, h, mass, rho, p, u)
+test_cases.f90:!!$ np-- particle number                                        [out]
+test_cases.f90:  integer np, nv, mat(maxn)
+test_cases.f90:  np = 0
+test_cases.f90:        np = np +1
+test_cases.f90:        x(1, np) = (i -1)*dx 
+test_cases.f90:        x(2, np) = (j -1)*dy 
+test_cases.f90:!!$       x(1, np +nv) = (i -1)*dx
+test_cases.f90:!!$       x(2, np +nv) = yl +dy
+test_cases.f90:!!$       v(1, np +nv) = v_inf
+test_cases.f90:!!$       v(2, np +nv) = 0.
+test_cases.f90:!!$       x(1, np +nv) = (i -1)*dx +0.5*dx
+test_cases.f90:!!$       x(2, np +nv) = yl +1.5*dy
+test_cases.f90:!!$       v(1, np +nv) = v_inf
+test_cases.f90:!!$       v(2, np +nv) = 0.
+test_cases.f90:!!$       x(1, np +nv) = (i -1)*dx
+test_cases.f90:!!$       x(2, np +nv) = 0. -dy
+test_cases.f90:!!$       v(1, np +nv) = 0.
+test_cases.f90:!!$       v(2, np +nv) = 0.
+test_cases.f90:!!$       x(1, np +nv) = (i -1)*dx -0.5*dx
+test_cases.f90:!!$       x(2, np +nv) = 0. -1.5*dy
+test_cases.f90:!!$       v(1, np +nv) = 0.
+test_cases.f90:!!$       v(2, np +nv) = 0.
+test_cases.f90:!!$       x(1, np +nv) = 0. -dx
+test_cases.f90:!!$       x(2, np +nv) = (j -1)*dy
+test_cases.f90:!!$       v(1, np +nv) = 0.
+test_cases.f90:!!$       v(2, np +nv) = 0.
+test_cases.f90:!!$       x(1, np +nv) = 0. -1.5*dx
+test_cases.f90:!!$       x(2, np +nv) = (j -1)*dy +0.5*dy
+test_cases.f90:!!$       v(1, np +nv) = 0.
+test_cases.f90:!!$       v(2, np +nv) = 0.
+test_cases.f90:!!$       x(1, np +nv) = xl +dx
+test_cases.f90:!!$       x(2, np +nv) = (j -1)*dy
+test_cases.f90:!!$       v(1, np +nv) = 0.
+test_cases.f90:!!$       v(2, np +nv) = 0.
+test_cases.f90:!!$       x(1, np +nv) = xl +1.5*dx
+test_cases.f90:!!$       x(2, np +nv) = (j -1)*dy -0.5*dy
+test_cases.f90:!!$       v(1, np +nv) = 0.
+test_cases.f90:!!$       v(2, np +nv) = 0.
+test_cases.f90:     x(1, np +nv) = (i -1)*dx/2
+test_cases.f90:     x(2, np +nv) = yl
+test_cases.f90:     v(1, np +nv) = v_inf
+test_cases.f90:     v(2, np +nv) = 0.
+test_cases.f90:     x(1, np +nv) = (i -1)*dx/2
+test_cases.f90:     x(2, np +nv) = 0.
+test_cases.f90:     v(1, np +nv) = 0.
+test_cases.f90:     v(2, np +nv) = 0.
+test_cases.f90:     x(1, np +nv) = 0.
+test_cases.f90:     x(2, np +nv) = i*dy/2
+test_cases.f90:     v(1, np +nv) = 0.
+test_cases.f90:     v(2, np +nv) = 0.
+test_cases.f90:     x(1, np +nv) = xl
+test_cases.f90:     x(2, np +nv) = i*dy/2
+test_cases.f90:     v(1, np +nv) = 0.
+test_cases.f90:     v(2, np +nv) = 0.
+test_cases.f90:  do i = 1, np
+test_cases.f90:  do i = np +1, np +nv
+test_cases.f90:  write(*,*)'      Total number of particles   ', np
+test.f90:subroutine test(np, nv, x, v, mat, h, &
+test.f90:  integer np, nv, mat(maxn), &
+test.f90:  do i = 1, np
+test.f90:  do i = 1, np
+time_integration.f90:subroutine time_integration(np, nv, x, v, mat, h, &
+time_integration.f90:     pa_sph, nnps, sle, skf, density_method, &
+time_integration.f90:!!$ np-- particle number                                        [in]
+time_integration.f90:!!$ nnps -- Nearest neighbor particle searching method           [in]
+time_integration.f90:  integer np, nv, mat(maxn), steps, refresh_step, save_step
+time_integration.f90:  integer pa_sph, nnps, sle, skf, density_method
+time_integration.f90:  if (nnps .eq. 0) then 
+time_integration.f90:     call direct_find(np +nv +ng, x, h, niac, pair_i, pair_j, skf)
+time_integration.f90:  else if (nnps .eq. 1) then
+time_integration.f90:     call link_list(np +nv +ng, x, h, niac, pair_i, pair_j, skf)
+time_integration.f90:     if (j .gt. np) write(*,*) i,j
+time_integration.f90:     call ghost_particles(np, nv, ng, x, v, h, mass, rho, p, &
+time_integration.f90:     if (nnps .eq. 0) then 
+time_integration.f90:        call direct_find(np +nv +ng, x, h, niac, pair_i, pair_j, skf)
+time_integration.f90:     else if (nnps .eq. 1) then
+time_integration.f90:        call link_list(np +nv +ng, x, h, niac, pair_i, pair_j, skf)
+time_integration.f90:  call output(np, nv, x, v, mat, h, mass, rho, p, u, c, filedir)
+time_integration.f90:  call ensightout_results(np+nv, x, v, rho, p, u, file_step, filedir)
+time_integration.f90:        do i = 1, np
+time_integration.f90:        call ghost_particles(np, nv, ng, x, v, h, mass, rho, p, &
+time_integration.f90:        if (nnps .eq. 0) then 
+time_integration.f90:           call direct_find(np +nv +ng, x, h, &
+time_integration.f90:        else if (nnps .eq. 1) then
+time_integration.f90:           call link_list(np +nv +ng, x, h, niac, pair_i, pair_j, skf)
+time_integration.f90:     call single_step(np, nv, ng, x, v, mat, h, &
+time_integration.f90:          pa_sph, nnps, sle, skf, density_method, &
+time_integration.f90:        do i = 1, np
+time_integration.f90:        do i = 1, np
+time_integration.f90:     do i = 1, np
+time_integration.f90:        call output(np, nv, x, v, mat, h, mass, rho, p, u, c, filedir)
+time_integration.f90:        call ensightout_results(np, x, v, rho, p, u, &
+time_integration.f90:  call output(np, nv, x, v, mat, h, mass, rho, p, u, c, filedir)
