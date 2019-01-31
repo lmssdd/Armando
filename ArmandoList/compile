@@ -1,0 +1,2 @@
+nvcc -o a2Dlist armando2Dlist.cu -I./inc -L./lib --ptxas-options=-v -lm -lcudpp_i686
+
