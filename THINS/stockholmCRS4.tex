@@ -1,0 +1,587 @@
+\documentclass[a4paper, 11pt, twocolumn]{article}
+
+\usepackage{fullpage}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage[UKenglish]{babel}
+
+\begin{document}
+
+\title{Transient simulation of a windowless spallation target with Armando}
+\author{Luca Massidda\\ CRS4, Science and Technology Park Polaris - Pula (CA), Italy}
+
+\date{Deliverable D4.2.06 - \today}
+
+
+\maketitle
+
+%\begin{abstract}
+\section{Introduction}
+The Smoothed Particle Hydrodynamic (SPH) is a mesh-less method, it adopts a Lagrangian approach and models the continuum as a set of mutually interacting particles that describe realistically and with good accuracy the motion of fluids, in particular when free surface conditions are present, without any limit on the density ratio. The fluid is treated as compressible and in our implementation this allows to simulate realistically the formation and propagation of acoustic pressure waves due to the interaction with a beam.
+
+The SPH approach, while rather new as an engineering tool, has already been applied to water wave breaking, dam collapse, water jets or impact of projectiles as referred in literature. It is not competitive with the traditional CFD methods when closed domains are analyzed, mainly due to relatively poor efficiency of the algorithm in a CPU architecture. The method is in fact well suited for massively parallel architectures. The recent interest and popularity of GPU machines has brought much attentions to methods of this kind.
+
+Armando is an SPH code, developed at CRS4 in cooperation with CERN. It has already been applied with success to the simulation of liquid and solid targets with beam interaction. In the framework of the THINS project, the code has been ported on GPU architecture. This task required the code to be almost entirely rewritten to take full advantage of the different hardware. The speed-up obtained with respect to a single CPU is above 60x, therefore allowing very high resolution analyses on common desktop hardware.
+
+The improved technology is applied to the simulation of a liquid metal free surface target that has been recently proposed for the European Spallation Source (ESS) project. The results of free surface stability analysis in relatively long times are illustrated as well as the quick transient phenomena and the pressure waves due to the beam power deposition.
+
+%\end{abstract}
+
+\section{The method}
+The idea at the basis of the method is to approximate any function $f({\bf x})$ of the domain $\Omega$ as:
+\begin{equation}
+f({\bf x}) = \int_\Omega f({\bf x'})W({\bf x} - {\bf x'}, h) d\Omega
+\end{equation}
+The kernel function $W$ is a smooth and differentiable function of the inter-particle distance and of a characteristic or \textit{smoothing length} $h$. It has a compact support and approximates the Dirac function as $h$ approaches zero, so that it has a unit integral over the domain.
+
+The fluid is discretized as a finite set of particles $i = 1 \ldots n_p$ of given mass $m_i$, position $x_i$, velocity $v_i$, density $\rho_i$, internal energy density $u_i$ and with known material properties. The value of any field function on the particle is approximated as a discrete sum approximating an integral. In discrete notation, we get the following expression of the value of a function at the particle $i$ position $f_i = {\hat f}({\bf x}_i)$:
+\begin{equation}
+f_i = \sum_j m_j \frac{f_j}{\rho_j}W_{ij}
+\end{equation}
+where $W_{ij} = W({\bf x} - {\bf x'}, h)$ and the sum is carried out on all the particles, $m_j$ and $\rho_j$ are the "$j$" particle mass and density, their ratio is the portion of volume occupied by a particle. Therefore the value of a field function is calculated as an integral mean, evaluated numerically on the position of the particles around the point of interest.
+
+The spatial derivatives of the function are obtained similarly by deriving the kernel function. 
+\begin{equation}
+\nabla f_i = \sum_j m_j \frac{f_j}{\rho_j} \nabla W_{ij}
+\end{equation}
+
+The method is used to approximate the Euler equations. The expressions of the Lagrangian time derivative of density, velocity and internal energy are the following:
+\begin{equation}
+\dot \rho_i = \sum_j m_j ({\bf v}_i - {\bf v}_j) \cdot \nabla W_{ij} 
+\end{equation}
+\begin{equation}
+\dot {\bf v}_i = \sum_j m_j \left(\frac{p_i}{\rho_i^2}+\frac{p_j}{\rho_j^2} \right) \nabla W_{ij} + {\bf g}_i 
+\end{equation}
+\begin{equation}
+\begin{split}
+\dot u_i = & \frac{1}{2} \sum_j m_j \left(\frac{p_i}{\rho_i^2}+\frac{p_j}{\rho_j^2} \right) ({\bf v}_i - {\bf v}_j) \cdot \\
+& \cdot \nabla W_{ij} + q_i
+\end{split}
+\end{equation}
+
+The method may be applied to gases, liquid and solids, the appropriate Equation Of State (EOS) closes the system and gives the value of the particle pressure as a function of density and internal energy.
+\begin{equation}
+p_i=EOS(\rho_i, u_i)
+\end{equation}
+
+The kernel function $W$ has a compact support, its value decreases rapidly as the inter-particle distance increases, the sums in the previous expressions are therefore limited to a number of neighbor particles whose distance from particle $i$ is lower than a cut-off distance proportional to the smoothing length.
+
+\section{Implementation}
+
+An explicit time integration procedure is adopted for the solution of a transient problem, based on a finite difference approximation of the derivatives in time. Each time step of the simulation may be divided in four phases:
+\begin{enumerate}
+\item Find the neighbors for each particle
+\item Calculate the Euler equations
+\item Integrate in time
+\item Calculate the Equation Of State
+\end{enumerate}
+
+The time integration phase is the simplest, it consists in updating the position, velocity, density and energy with a finite difference time integration scheme. We adopted a three step Total Variation Diminishing Runge-Kutta scheme, it gives good smoothing properties for the higher frequencies and an higher value of the allowable time step with respect to the commonly used Leap-Frog scheme. This task can be parallelized very efficiently on a GPU architecture, since each particle may have a dedicated kernel and the data on the other particles of the model is not required.
+
+The EOS calculation simply updates the pressure of each particle on the basis of its density and internal energy applying the chosen material model. This task performs well in a GPU architecture.
+
+The first two phases are the more computational demanding.
+
+The neighbor search consists in finding the set of particles whose distance is lower than a chosen cut-off distance for each particle of the model. If $n_p$ is the number of particles we are dealing with, a brute force algorithm would require the calculation of $n_p^2$ distances, the price of simplicity would be inefficiency. 
+
+A smarter approach consists in using some space sorting technique. An auxiliary Cartesian grid is adopted, with grid spacing equal to the cut-off distance, each cell of this grid has a unique index assigned and it is easy to calculate, for each particle, the cell in which it is contained. The particles are then sorted and grouped with respect the cell index. The search for neighbor particle is then greatly simplified since, for each particle, it has to be extended only to the particles that fall in the same cell or in one of the other 26 cell that surround the Cartesian cell considered. A neighbor list may therefore be completed.
+
+This is not an easy task to implement in a GPU architecture and we will not get in much detail here. Fortunately, several libraries are available that ease some of the task involved (such as sorting for instance). In particular the Thrust library is already available in the Cuda distribution for nVidia GPUs.
+
+The most important phase is the calculation of the Euler equations, giving as a result the time derivative of the velocity, density and energy for each particle. The sum in the finite expression is extended to the neighbor particles, read from the neighbor list previously calculated. This task is computationally expensive, it is in fact the most demanding part of the code, due to the number of operations involved and to the double cycle on the entire particles set and on the neighbors.
+
+The performance is good on the GPU architecture and there is still some space for improvement, for instance in the coalesced reading of data from the device memory.
+
+This document is not intended as a comprehensive report on the techniques that may be adopted to port an application in a GPU architecture, the interested reader is referred to the documentation provided with CUDA by nVidia, for similar problems and to the previous report for this task of the THINS project, where some more information is given. Here in the following we give some more detail on the improvement in the boundary conditions that have been necessary to efficiently set-up an engineering simulation.
+
+
+\section{Boundary conditions}
+The boundary conditions are a weak point for the methodology. It is not easy to impose fluxes and values of resolved fields on the boundaries, mainly due to the Lagrangian approach adopted.
+
+Such boundary conditions are anyway a key factor to realize a good engineering analysis with this tool. During the project some effort has been paid in developing and tuning the most critical ones.
+
+\subsection{Walls}
+The structures present in the computational domain are simply treated as a different material. 
+
+If necessary, it is in fact possible to model the solids together with gases and liquids, for instance to solve fluid-structure interaction problems. This may anyway lead to long simulation times due to the stability requirements of the computational time step, related to pressure wave propagation in the solid domain.
+
+The solids may also be treated as rigid, the particles in which they are divided have prescribed displacements, and the interaction with other particles does not have any effect on them.
+
+The interaction between particles of different materials does not obey to the same rules previously described. The density value is not affected by the interaction with particles of different material and so is the pressure value.
+
+A repulsion force is applied instead, proportional to the stiffness of the materials, and inversely proportional to the distance between particles. If $\bf{f}_i$ is the repulsive force acting on particle $i$ it can be written as:
+
+\begin{equation}
+{\bf f}_i = \sum_j c_j^2 h^2 W_{ij} \frac{{\bf x}_i - {\bf x}_j}{|{\bf x}_i - {\bf x}_j|}
+\end{equation}
+
+The speed of the sound $c_j$ for particle $j$ gives the stiffness of the boundary, $h$ is the smoothing length.
+
+The external surfaces are represented as a set of particles, if these are treated as a rigid material, only their position and the speed of sound has to be set. This allows to define the computational domain in an extremely easy way: any surface of a CAD model may in fact be meshed in triangles of the desired mean size using an auxiliary software, such as {\it gmsh} or {\it netgen} among the free ones.
+
+The quality of such mesh is not of particular importance, the nodes of the mesh may be imported as boundary particles, the only requirements are that the numerical density of these points is enough to have a good representation of the surface and that the maximum distance between neighbor points should not exceed the smooth length $h$ of the SPH model, so that no hole is present in the surface.
+
+This mechanism is perfectly integrated in the structure of the application and has been efficiently ported in the GPU architecture. In fact the neighbor list and the inter-particle interaction between particles of different materials are evaluated with the same computational kernels.
+
+\subsection{Inlet boundary}
+Inlet boundary conditions are not common in SPH codes. Since it is not possible to define fluxes, new particles have to be added to the computational domain at a given rate, with prescribed values of velocity, density and internal energy. The rate is calculated on the basis of the inlet velocity to keep the right inter-particle distance between subsequent sets of inlet particles.
+
+This boundary condition cannot be implemented in a fully parallel way on the GPU, it necessarily requires the computation of the inlet set on the CPU and a memory transfer on the device. This is not done at each time step anyway, and since the size of the transferred data is limited, the effect on the overall performance is barely noticeable.
+
+\subsection{Outlet boundary and out of boundaries condition}
+A particle that reaches the boundaries of the computational domain, or that crosses an outlet surface has to be removed from the computational domain. This keeps the number of particle solved by the application to a limited value. 
+
+The outlet condition is implemented in a fully parallel and efficient way in the code. 
+When a particle exits the computational domain it is given a very high hash index value, so, when the particles are reordered to compute the neighbor list, these ones fall at the end of the particles array. By counting the number of outgoing particles, it is then possible to update the number of particles present in the domain and to exclude the outgoing ones from the computation.
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=0.9\textwidth]{Pictures/model1.png} \\
+\includegraphics[width=0.9\textwidth]{Pictures/model2.png} 
+\caption{KIT free surface target design for the ESS spallation source} 
+\label{fig:target}
+\end{figure*}
+
+\section{Free surface target for ESS}
+The accelerated version of the SPH code has been applied to the analysis of a liquid metal target, to test the potential of the code and to define and verify the simulation techniques that may be adopted. The example described may be used as a reference for similar analysis with different geometries, materials and boundary conditions. We used as a reference the free surface concept for the European Spallation Source, recently developed by KIT shown in Figure \ref{fig:target}.
+
+\subsection{Target concept}
+The European Spallation Source ESS aims at producing high energy spallation neutrons. They are produced when a high energy ($W=2500MeV$) proton beam with a mean current of $I=2 mA$ hits an appropriate target material. Inherently coupled to the desired spallation reaction is the high heat deposition in the target. This power is mainly due to the proton current and can be calculated as the product of the energy of a single proton times the number of protons per second in the beam, i.e. $Q = UI = 5 MW$. 
+
+In ESS the high beam power is provided by a pulsed source with a repetition rate of $f=20 Hz$. The duration of the pulses is "long" for this kind of application and is chosen equal to $1ms$.
+With each pulse the target material is heated by the proton beam, the amount of energy deposited in the target as heat source may be estimated through neutronics calculations and in this case amounts to $2.3MW$. The heating is non-uniform, as the heat deposition strongly varies in the material; for instance it exponentially decreases with the penetration depth of the beam into the target. The maximum heat deposition is near the free surface and becomes quite low (less than 2 orders of magnitude relative to the maximum) at a penetration depth of about $600 mm$. Heating is accompanied with thermal expansion of the target material and thus with thermal stresses and potentially with pressure waves.
+
+In a windowless target the material is a liquid metal which is pumped through a cooling loop to remove the heat. The proton beam is directed on a free surface, so that no solid structures are subjected to the proton beam. Since the beam in principle can interact with any material, it must be guided trough a vacuum environment before hitting the target. Thus, in a windowless target a free surface separates the vacuum and the liquid metal target material.
+
+The target module is installed at the exit of the heat exchanger. The flow is pumped upwards, then directed into a horizontal channel and then accelerated by a nozzle into an open channel which is inclined relative to the horizontal plane by a 15 degree angle. The proton beam enters the liquid metal through the free surface. The inlet channel has a rectangular shape, it is $220 mm$ wide and $110mm$ high. The nozzle has the same width and a reduced height of $85mm$ to accelerate the flow. The window has the same width of the channel and a length of $235mm$. The length of the inlet channel considered is approximately $1m$ whereas the outlet channel is not yet totally defined, and may be a sensitive part for the free surface stability. 
+
+With this configuration and given the proton energy deposition in the material, it is possible to calculate the minimum velocity that does not cause any superposition of the deposited energy between subsequent pulses, and in this case amounts to $1.6m/s$.
+
+Following each pulse, a complex shock wave is generated in the channel. We expect a pressure peak propagating in the pipes and potentially damaging the nozzle itself and the rest of the equipment. Moreover since a free surface is directly exposed to the proton beam deposition, a splashing phenomenon may take place, and the liquid material of the target may be ejected through the window. 
+
+In this analysis, we want to take advantage of the tool we developed to verify this concept.
+
+Several analysis are run and we will verify the stability of the free surface in non heated condition and under the pulsed beam load, to verify that no liquid jets are generated through the target free surface. Moreover, the shock waves generated by the pulsed beam are also analyzed to identify their intensity, and to check if they may cause any damage to the equipment.
+
+%Moreover, the cavitation of the liquid metal may be an important factor in the operation of such an equipment. The resistance to negative pressures of the liquid is limited by the presence of small gas bubbles that break the continuum and may expand in presence of negative pressures. A limit to the minimum pressure is introduced, in a separate analysis and its effect is evaluated.
+
+\subsection{Target material}
+The properties of interest for mercury, lead and LBE are compared in Table \ref{tab:properties}.
+
+\begin{table*}
+\centering
+\begin{tabular}{|l|r|r|r|}
+\hline
+\textbf{Property (1 atm)} & \textbf{Hg} & \textbf{Pb} & \textbf{LBE} \\
+\hline
+Density [kg/m3] & 13534 & 10673 & 10551 \\
+Standard weight [g/mol] & 200.6 & 207.2 & 208.18 \\
+Melting point [K] & 234.3 & 600.6 & 397.7 \\
+Boiling point [K] & 630 & 2022 & 1943 \\
+Heat capacity [J/molK] & 28 & 30.7 & 30.8 \\
+Vapor pressure @350K [Pa] & $10$& & \\
+Vapor pressure @700K [Pa] & & $10^{-4}$ & $10^{-4}$ \\
+Sound speed [m/s] & 1451.4 & 1791 & 1774 \\
+Thermal exp. coeff [$10^{-6}$/K] & 60.4 & 120 & 123\\
+\hline
+\end{tabular}
+\caption{Material properties of some liquid metals.}
+\label{tab:properties}
+\end{table*}
+
+Mercury was the first choice in the ESS design mainly due to its high specific weight. The lower temperature range in which it is liquid is not a great advantage, since higher temperatures are a positive factor for the containing structures exposed to radiation damage.
+
+As appears from the Table \ref{tab:properties}, the density of the LBE is not that different form Hg but this material has several interesting properties, like the high value of the boiling temperature and the extremely low value of the vapor pressure. This allows to have higher temperature increase in the liquid with a large free surface thanks to the low value of the vapor pressure.
+
+\section{Target simulation}
+
+\subsection{Loading conditions}
+The beam power is deposited with long pulses, each pulse is $1ms$ long and the pulse frequency is $20Hz$. This means that the peak current and power is $50$ times higher than the average.
+
+The spatial distribution of the power inside the target depends on the properties of the material and on the focusing of the beam. The energy distribution per proton inside the material may be approximated with the following function (\ref{eq:beam}):
+\begin{equation}
+\begin{split}
+e_p(x_1, x_2, x_3) & = f(x_1, x_2) g(x_3) \\
+f(x_1, x_2) & = e^{-\frac{1}{2} \left( \left( \frac{x_1}{\sigma_1}\right)^2 + \left( \frac{x_2}{\sigma_2}\right)^2 \right) } \\
+g(x_3) & = \alpha e^{ -\frac{x_3}{\beta}} \left( 1 - e^{-\gamma -\frac{x_3}{\delta}}\right)
+\end{split}
+\label{eq:beam}
+\end{equation}
+This distribution is valid for an impact perpendicular to the target surface, the 3rd axis is oriented along the beam direction and the 1st and 2nd axes form the orthonormal triad. The parameters of this function are: $\alpha = 0.00130948$, $\beta = 15.5814$, $\gamma = 0.654066$, $\delta = 6.72606$ with the measures on the three axis expressed in $cm$.
+
+In this application the beam direction is oblique on the target and hits the free-surface with an angle of $75^\circ$. A coordinate transformation is required:
+\begin{equation}
+\begin{split}
+x_1 & = z \\
+x_2 & = y \\
+x_3 & = x - y / tg(75^\circ)
+\end{split}
+\end{equation}
+
+This is clearly an approximation,  it preserves the deposition length along the axis of the beam and and tries to reproduce the correct profile close to the free surface at the point of impact of the beam.
+
+The total average power deposited on the target is $2.3MW$, lower than the maximum energy of the beam, as expected and corresponding to the neutronic analyses.
+
+\subsection{Lead-bismuth eutectic Equation Of State}
+The target material selected is the lead bismuth eutectic, as mentioned. It is necessary to define an Equation of State of this material to setup a correct simulation. The equation of state relates the pressure in the liquid to its density and the specific internal energy and in this case can be expressed as:
+\begin{equation}
+p = p_0 + K_s \mu + \Gamma_0 \rho_0 u
+\end{equation}
+with
+\begin{eqnarray*}
+K_s = \rho c^2 \\
+\Gamma_0 = \frac{\alpha K_s}{\rho_0 c_p}\\
+\mu = \frac{\rho - \rho_0}{\rho_0}
+\end{eqnarray*}
+
+It is assumed a reference temperature of $573K$, for which the density value is $10338kg/m$, the sound velocity is $1740m/s$, the volumetric expansion coefficient is $\alpha = 127.4 10^{-6} \cdot K^{-1}$ and the specific heat $c_p$ is $146J/kgK$, the volumetric stiffness $K_s$ and the Gruneisen parameter $\Gamma_0$ are $31.3GPa$ and $2.66$.
+
+It is also important to specify the value of the cavitation pressure. Cavitation is a process in which a bubble of vapor is formed inside the liquid or at the point of contact with a surface, and expands under negative pressure breaking the continuity of the fluid. A liquid can be subject to almost any value of positive pressure, without significant changes in its behavior but it may cavitate if the pressure is negative and lower than a certain limit.
+
+The maximum value of the negative pressure a liquid can sustain is very difficult to measure and strongly depends  on the temperature but also on the purity level of the material, on the presence of dispersed gases and on the time history of the load.
+
+The literature reports lots of values for cavitation pressure for mercury, with a huge variations in the data, even of several orders of magnitude. No data was found for LBE. In the following we assume that the limit is $150kPa$, a value that we used as reference in previous simulations for mercury.
+
+\subsection{The model}
+We did not adopt a complete model of the liquid metal circuit. It was still not totally defined in its geometry and components and it may be excessively large and useless for the purposes of this analysis. Only the portion close to the beam deposition area has been analyzed, and in particular the area of the free surface exposed to the beam and the closed channels of inlet and outlet.
+
+An additional inlet channel is used to regularize the liquid flow before entering the area of beam impact. The fluid inlet is in fact composed by two free falling jets that enter an open channel and are pumped towards the beam window in the target channel. The result is that flow inside the channel is regular without significant oscillation and is not sensitive to the numerical implementation of the inlet flow conditions.
+
+In the outlet channel, a free surface condition is assumed, since this appears as an objective for the designer, so that the pressure in the outlet channel of target is null. This may be obtained with a careful choice of the geometry of the outlet duct. In our simulation, we let the flow exit freely from the outlet duct without containment, with the assumption that a well designed target will reproduce or at least approximate this condition.
+
+The model is formed by a set of particles of given size and mass. In the following simulations, we adopted a particle diameter of $4mm$ and a smoothing length $h = 4.8mm$. The structure of the channel is described as a set of rigid particles placed on its surface. Their position comes from a simple triangularization of the geometrical model, with a mean distance in between the particles of $3 mm$, lower than the one used for the fluid particles to obtain a good approximation of the channel surface.
+
+Once the steady state condition is reached, the total number of particles involved in the simulation amounts to nearly one million, with an occupancy of less than $1GB$ on the computing device.
+
+The rigidity of the particles used to simulate the channel surface is proportional to the value of the speed of sound used to describe its material. We have chosen to use $20m/s$, a value that gives enough rigidity for the velocities typical of the flow we are simulating.
+
+The "pump" adopted in the model, is a portion of space in which the fluid velocity is forced to get close to the desired direction and intensity, thus is parallel to the channel axis towards the window and has an intensity of $1.5m/s$. This leads to a velocity in the beam window area close to $2m/s$.
+
+
+\subsection{Target filling and beam heating}
+
+In order to run the heating transient simulation it is first necessary to obtain a steady state condition with a free surface.
+
+The easiest way to obtain that is to simulate a fill up of the channel, from the empty condition to a steady state regime. The inlet boundary introduces LBE particles with the target rate and the pump gives the liquid the desired value of velocity.
+
+Since the overall length of the model is approximately $2m$ and the average velocity of the fluid is $2m/s$ it takes a second for the first fluid particle to reach the outlet, but a fully developed fluid flow with a steady free surface is obtained after only $2s$.
+
+This part of the simulation took advantage of a trick for the method. The fluid is always treated as compressible, and the stiffness of the material is determined by the property of the speed of sound. The higher this value, the higher the stiffness, and the lower will be the maximum allowable time step for the simulation and the longer the number of time steps required to complete it.
+
+To be more precise, since the inter-particle distance is $4mm$ and the speed of sound for LBE is $1740m/s$ the maximum allowable time step for the simulation would be $2.3 \mu s$ and the number of time steps required to complete a $2s$ simulation would be close to one million.
+
+Since in this phase we are not yet interested in shock wave propagation, we can modify material properties, choosing a lower value of the speed of sound and therefore reducing the stiffness of the material. Good results may be obtained dividing the speed of sound by a factor of $100$, and adopting the value of $17.4 m/s$, a value that is still much higher than the characteristic velocities of the phenomena and that allows to reduce the number of required time steps by a factor of $100$.
+
+The higher material compressibility has a limited effect on the results as long as the chosen speed of sound is much higher then the maximum particle speed in the simulation, the quality of the results decreases as lower values of the material stiffness are considered.
+
+Moreover, since we are not interested in the effects of beam heating on the target flow, we set to zero the Gruneisen parameter $\Gamma$ in this phase.
+
+\begin{figure*}[t]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\small time = 0.4s & \small time = 0.8s \\ 
+\includegraphics[width=0.45\textwidth]{Pictures/Init10.png} &
+\includegraphics[width=0.45\textwidth]{Pictures/Init20.png} \\
+\hline
+\small time = 1.2s & \small time = 1.6s \\ 
+\includegraphics[width=0.45\textwidth]{Pictures/Init30.png} &
+\includegraphics[width=0.45\textwidth]{Pictures/Init40.png} \\
+\hline
+\end{tabular}
+\caption{Fill up of the target channel}
+\label{fig:filling}
+\end{figure*}
+
+Figure \ref{fig:filling} shows some snapshots of the filling of the target channel, starting form an empty condition to a fully developed steady state flow. It is important to notice that even if no particular care has been taken for this transient and the process of reaching the steady state condition only took $2s$ or less, no instability of the free surface appears and the fluid is perfectly contained in the channel.
+
+The first picture clearly shows the effect of the "pump" in regularizing the flow at the entrance of the channel. In the second, one can see that the fluid is detached from the lower surface of the beam window region due to its inertia, in the third picture the fluid has reached the outlet but still is not in contact with the top surface of the inlet channel, and finally the fourth picture shows the fully developed steady state flow.
+
+It is possible to look at the energy distribution due to the beam power deposition. As mentioned, we did not yet include any thermal expansion effect in the material. In this phase we will only look at the power deposition in the liquid.
+
+\begin{figure*}[t]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\small pulse 1 & \small pulse 2 \\
+\includegraphics[width=0.45\textwidth]{Pictures/Heating1.png} &
+\includegraphics[width=0.45\textwidth]{Pictures/Heating2.png} \\
+\hline
+\small pulse 3 & \small pulse 4 \\
+\includegraphics[width=0.45\textwidth]{Pictures/Heating3.png} &
+\includegraphics[width=0.45\textwidth]{Pictures/Heating4.png} \\
+\hline
+\end{tabular}
+\caption{Target heating, a cutoff of the model is shown for clarity. The specific energy of $12.5 kJ/kg$ causes a temperature rise of $85 K$}
+\label{fig:heating}
+\end{figure*}
+
+The simulation starts from a fully developed flow, to which we apply the beam power deposition in pulses of $1ms$ duration with a frequency of $20Hz$. The Figure \ref{fig:heating} shows the energy distribution inside the model after the impact of the first four pulses.
+
+It is clear that the energy and temperature distribution is soon regularized, and presents a maximum along the beam axis at the beginning of the inlet channel.
+
+The maximum energy density is higher than that due to a single pulse, it is actually almost double, and this is due to the superposition of subsequent pulses. In order to reduce the maximum energy it is anyway possible to increase the fluid velocity, as long as this does not have effects on the free surface stability.
+
+The peak energy density in the model is calculated in $12.5 kJ/kg$, corresponding to a temperature increase of $85 K$ given a specific heat of $146 J/kgK$.
+
+Before starting the analysis on the pulse transient, it is worthy to repeat this analysis with an higher value of the fluid inlet velocity to check which may be the limits of design with respect to the stability of the free surface for different values of the flow velocity in the target channel.
+
+We run several simulations progressively increasing the pumping speed up to a value doubled with respect to the reference one without any variation in the rest of the simulation parameters.
+
+\begin{figure*}[t]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\small Mass flow rate 125\% & \small Mass flow rate 150\% \\
+\includegraphics[width=0.45\textwidth]{Pictures/mfr125.png} &
+\includegraphics[width=0.45\textwidth]{Pictures/mfr150.png} \\
+\hline
+\small Mass flow rate 175\% & \small Mass flow rate 200\% \\
+\includegraphics[width=0.45\textwidth]{Pictures/mfr175.png} &
+\includegraphics[width=0.45\textwidth]{Pictures/mfr200.png} \\
+\hline
+\end{tabular}
+\caption{Particle velocity in the target with increasing the mass flow rate}
+\label{fig:filling2}
+\end{figure*}
+
+Figure \ref{fig:filling2} shows the fluid particles velocity and the shape of the free surface on the window. Some care has to be taken in the transient. The velocity has to be increased gradually to avoid any liquid metal leak from the target window. In steady state conditions, the free surface appears perfectly regular and stable. A contact point is reached at the small elbow of the channel duct at the exit as the mass flow rate is increased.
+
+Once the steady state condition is reached for the double mass flow rate, it is possible to run the heating simulation and verify the energy increase and the maximum temperature rise in the target. The results are shown in Figure \ref{fig:heating2}. It is clear that in this condition the superposition of subsequent pulses is much lower and therefore the maximum energy and temperature increase in the LBE is lower than the one obtained in the design conditions.
+
+\begin{figure*}[t]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\small pulse 1 & \small pulse 2 \\
+\includegraphics[width=0.45\textwidth]{Pictures/HeatingF1.png} &
+\includegraphics[width=0.45\textwidth]{Pictures/HeatingF2.png} \\
+\hline
+\small pulse 3 & \small pulse 4 \\
+\includegraphics[width=0.45\textwidth]{Pictures/HeatingF3.png} &
+\includegraphics[width=0.45\textwidth]{Pictures/HeatingF4.png} \\
+\hline
+\end{tabular}
+\caption{Target heating with double mass flow rate. The specific energy of $9 kJ/kg$ causes a temperature rise of $62 K$}
+\label{fig:heating2}
+\end{figure*}
+
+The outlet conditions may play an important role in the stability of the free surface in the window area. It was evident from the previous analysis that increasing the velocity causes the fluid to have a point of contact progressively closer to the window. The use of an elbow to close the liquid metal circuit has to be carefully evaluated and its shape has to be designed properly. We checked a model in which the channel duct forms an elbow with a very short curvature radius. The filling up simulation clearly shows that this cannot be a good solution. Too much counter pressure is generated at the exit and the liquid metal is actually ejected through the window as shown in Figure \ref{fig:loop}
+
+\begin{figure*}[t]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\small time = 0.8s & \small time = 1.2s\\
+\includegraphics[width=0.45\textwidth]{Pictures/loop20.png} &
+\includegraphics[width=0.45\textwidth]{Pictures/loop30.png} \\
+\hline
+\small time = 1.6s & \small time = 2.0s\\
+\includegraphics[width=0.45\textwidth]{Pictures/loop40.png} &
+\includegraphics[width=0.45\textwidth]{Pictures/loop50.png} \\
+\hline
+\end{tabular}
+\caption{Particle velocity in the target when an elbow with an high curvature is adopted at the outlet}
+\label{fig:loop}
+\end{figure*}
+
+In order to run a shock wave propagation simulation, once the flow is fully developed, the particle position and velocities are imported in a second model, in which the density value is set to the reference value and the energy is set to zero. In this model the correct value of the speed of sound is adopted. A pressure wave would travel the whole model length in $1ms$ approximately, therefore $4000$ time steps and a total simulated time of $8ms$ are more than sufficient to completely diffuse and dissipate the pressure waves in the model and obtain a good steady state condition. This will be the starting condition for the transient analyses of shock wave propagation.
+
+\subsection{Pulse transient}
+Due to Joule heating by the proton beam, the temperature of the LBE rises locally during the pulse. The heating induces a thermal expansion. The thermal expansion pushes the surrounding fluid radially outward, so that a pressure peak forms along the proton beam axis. 
+
+At the end of the pulse, the fluid is still moving outwards while the thermal expansion has come to an end, resulting in tensile stresses on the central area of beam deposition. Therefore, first a compressive and then a tensile shock wave are generated. Whereas the liquid is supposed to withstand any value of positive pressure, if negative pressure is lower than a certain limit cavitation may take place, and the continuity of the liquid is broken by the formation or the growth of gas bubbles.
+
+The properties of the material are here set to their real values, and obviously the thermal expansion is considered. The value of the maximum allowable time step as mentioned is related to the speed of sound in the liquid, therefore the value of the time step of $2 \mu s$ is two orders of magnitude less than that adopted for the initial setup and flow development in the target. In this simulation we looked at the first two pulses giving a total simulated time of $100ms$, and $50000$ time steps. The mass flow rate considered gives a flow velocity of $2m/s$ in the window area as in the first simulation described.
+
+In a previous simulation that was performed on the same target on a CPU only version of the application, the analysis had to be limited to the the first $2ms$, since it was too time consuming on the hardware used. The acceleration obtained in the new version of the SPH code allowed to perform a much longer and detailed analysis that put in evidence some new behavior of the target.
+
+The liquid metal is subject to a complex pattern of shock waves due to the thermal expansion. It appears that the most intense pressure waves are generated at the beginning and at the end of each pressure pulse. The multiple reflection of these waves inside the channel soon lead to a difficulty in the interpretation of the pressure pattern. Figure \ref{fig:pressure} shows the pressure distribution in the vertical plane containing the beam axis at the very beginning of the beam deposition. In this analysis, we did not use the tensile limit for the material.
+
+\begin{figure*}[t]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\small time = $20 \mu s$ & \small time = $40 \mu s$ \\
+\includegraphics[width=0.45\textwidth]{Pictures/ShortN01.png} &
+\includegraphics[width=0.45\textwidth]{Pictures/ShortN02.png} \\
+\hline
+\small time = $60 \mu s$ & \small time = $80 \mu s$ \\
+\includegraphics[width=0.45\textwidth]{Pictures/ShortN03.png} &
+\includegraphics[width=0.45\textwidth]{Pictures/ShortN04.png} \\
+\hline
+\small time = $100 \mu s$ & \small time = $120 \mu s$ \\
+\includegraphics[width=0.45\textwidth]{Pictures/ShortN05.png} &
+\includegraphics[width=0.45\textwidth]{Pictures/ShortN06.png} \\
+\hline
+\small time = $140 \mu s$ & \small time = $160 \mu s$ \\
+\includegraphics[width=0.45\textwidth]{Pictures/ShortN07.png} &
+\includegraphics[width=0.45\textwidth]{Pictures/ShortN08.png} \\
+\hline
+\end{tabular}
+\caption{Pressure distribution [Pa] in the symmetry plane of the target when a material without tensile limit is considered}
+\label{fig:pressure}
+\end{figure*}
+
+The pressure distribution in the plane is characterized by an oscillation of positive and negative pressure areas that remain concentrated around the beam deposition and that does not seem to propagate significantly along the channel. The presence of a free surface in fact has the effect of reducing the pressure peaks in the circuit. 
+
+\begin{figure*}[t]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\small time =$20 \mu s$ & \small time = $40 \mu s$ \\
+\includegraphics[width=0.45\textwidth]{Pictures/ShortC01.png} &
+\includegraphics[width=0.45\textwidth]{Pictures/ShortC02.png} \\
+\hline
+\small time = $60 \mu s$ & \small time = $80 \mu s$ \\
+\includegraphics[width=0.45\textwidth]{Pictures/ShortC03.png} &
+\includegraphics[width=0.45\textwidth]{Pictures/ShortC04.png} \\
+\hline
+\small time = $100 \mu s$ & \small time = $120 \mu s$ \\
+\includegraphics[width=0.45\textwidth]{Pictures/ShortC05.png} &
+\includegraphics[width=0.45\textwidth]{Pictures/ShortC06.png} \\
+\hline
+\small time = $140 \mu s$ & \small time = $160 \mu s$ \\
+\includegraphics[width=0.45\textwidth]{Pictures/ShortC07.png} &
+\includegraphics[width=0.45\textwidth]{Pictures/ShortC08.png} \\
+\hline
+\end{tabular}
+\caption{Pressure distribution [Pa] in the symmetry plane of the target when a material without a tensile limit of $150kPa$ is considered}
+\label{fig:pressureC}
+\end{figure*}
+
+The same analysis was run with a limit of $150kPa$ on the negative pressure and the results are shown in Figure \ref{fig:pressureC}. The pattern is similar but the material limits the tensile value and rapidly dissipates the mechanical energy.
+
+The pressure peak in both model is quite high inside the liquid, it is in fact well above $20bar$. It is anyway interesting to notice that the pressure on the contact surface is much lower. This is due to the fact that the containing structure has a limited rigidity, and this greatly reduces the pressure on it and the consequent stresses. In a fluid structure interaction problem, the pressure on the interface is related to the relative value of the stiffness of the facing materials.
+
+We run the simulation for a longer time to verify whereas any splashing phenomenon may take place in the design condition. In a total time of $100ms$ corresponding to two beam pulses no splashing phenomenon takes place, and only a small deformation of the free surface is barely visible, see Figure \ref{fig:surface1}.
+
+\begin{figure*}
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\small time = 1ms & \small time = 1ms \\
+\includegraphics[width=0.45\textwidth]{Pictures/LongCE01.png} &
+\includegraphics[width=0.45\textwidth]{Pictures/LongCV01.png} \\
+\hline
+\small time = 26ms & \small time = 26ms \\
+\includegraphics[width=0.45\textwidth]{Pictures/LongCE25.png} &
+\includegraphics[width=0.45\textwidth]{Pictures/LongCV25.png} \\
+\hline
+\small time = 51ms & \small time = 51ms \\
+\includegraphics[width=0.45\textwidth]{Pictures/LongCE51.png} &
+\includegraphics[width=0.45\textwidth]{Pictures/LongCV51.png} \\
+\hline
+\small time = 76ms & \small time = 76ms \\
+\includegraphics[width=0.45\textwidth]{Pictures/LongCE76.png} &
+\includegraphics[width=0.45\textwidth]{Pictures/LongCV76.png} \\
+\hline
+\end{tabular}
+\caption{Transient response to the pulsed heating. The energy density is in $[J/kg]$ and the vertical velocity in $[m/s]$.}
+\label{fig:surface1}
+\end{figure*}
+
+In order to verify the limits of the target design, we tried to modify the design conditions and see what may be the consequences of the adoption of a shorter pulse. All the boundary conditions of the problem are left unchanged with the only exception of the beam pulse, that is now $100$ times shorter and $100$ times more powerful, to keep unchanged the total deposited energy per pulse, the pulse length is now $10 \mu s$, the frequency is still $20 Hz$ and the beam power is $500MW$ due to the higher current considered. The evolution of the free surface is shown in Figure \ref{fig:surface2}
+
+\begin{figure*}
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\small time = 1ms & time = 20ms \\
+\includegraphics[width=0.45\textwidth]{Pictures/LongH001.png} &
+\includegraphics[width=0.45\textwidth]{Pictures/LongH021.png} \\
+\hline
+\small time = 40ms & time = 60ms \\
+\includegraphics[width=0.45\textwidth]{Pictures/LongH041.png} &
+\includegraphics[width=0.45\textwidth]{Pictures/LongH061.png} \\
+\hline
+\small time = 80ms & time = 100ms \\
+\includegraphics[width=0.45\textwidth]{Pictures/LongH081.png} &
+\includegraphics[width=0.45\textwidth]{Pictures/LongH100.png} \\
+\hline
+\end{tabular}
+\caption{Transient response to the pulsed heating for a pulse length of $10 \mu s$. The energy density is in $[J/kg]$.}
+\label{fig:surface2}
+\end{figure*}
+
+In this case it is evident that something similar to  an explosion takes place inside the material. The propagating shock wave is totally converted in kinetic energy when it reaches the free surface and causes a splashing. The use of a tensile limit dissipates part of the mechanical energy but this is not sufficient to avoid the phenomenon.
+
+%It is know that the use of finely dispersed gases in the liquid metal may help in dissipating shock waves, since these not only give a tensile limit to the LBE but also reduce the material stiffness and thus reduce the intensity of the shock waves. The use of such an approach may result in lower intensity of the shock wave but not necessarily in the absence of the splashing.
+
+%It appears that it may be a good strategy the use of a thin safety window in front of the free surface to avoid the occurrance of liquid metal jets out of the target channel. Such a window would not be subject to a differential pressure on its surface, and it its thickness is low so will be the thermal stresses du to the beam power deposition.
+
+%A new simulation was run to check this type of design by simply adding a set of boundary particle where the open window was previously, the short pulse was adopted again. The stiffness of this boundary is very limited and this is imposed by choosing a low value ($10m/s$) for the characteristic speed for these particles.
+
+\section{Conclusions}
+In the framework of the THINS project, the Smoothed Particle Hydrodynamics code Armando has been ported on a GPU architecture. The code has been deeply modified to take full advantage of the massively parallel computing environment and the result in terms of performance acceleration have been very interesting. It is now possible to run on a desktop environment and within acceptable times, simulation that would require a dedicated high performance cluster. 
+
+The code has been applied to a complete analysis of a liquid metal target that has been proposed by KIT for the ESS project. With this new implementation, it was possible to extend the duration of the simulation from $2ms$ on a CPU environment to $100ms$ on a GPU in the same clock time.
+
+The results show the capability of the code to model all the significant transients of a free surface liquid, and verify the free surface stability, the filling up of the channel, the energy distribution inside the metal at different flow rates, the influence of the channel geometry on the flow configuration and most important, the fast transients and pressure waves generated by a pulsed beam deposition. The developed application may be a valuable tool for the design and analysis of liquids with free surface and subject to fast heating.
+
+
+\begin{thebibliography}{9}
+
+
+\bibitem{Class11} Class A. Fetzer J., Fischer U. Gordeev R., Stieglitz M., Majerle M., Vladimirov P., 2011.
+ \emph{Fulfillment of selection criteria by META:LIC concept of KIT}.
+ ESS report.
+
+\bibitem{Gottlieb98} Gottlieb S., Shu C., 1998.
+ \emph{Total variation diminishing Runge-Kutta schemes}.
+ Mathematics of Computation, Vol. 67, 221, pp. 73--85.
+
+\bibitem{Green10} Gree S., 2010.
+ \emph{Particle simulation using CUDA}.
+ CUDA SDK samples.
+
+\bibitem{LBE} \emph{Handbook on Lead-bismuth Eutectic Alloy and Lead Properties, Material Compatibility,
+Thermal-hydraulics and Technologies, 2007 Edition}.
+OECD/NEA Nuclear Science Committee, OECD 2007, NEA No.6195
+
+\bibitem{Liu03} Liu G., Liu M., 2003. 
+ \emph{Smoothed Particle Hydrodynamics: a meshfree particle method}.
+ World Scientific.
+
+\bibitem{Massidda08} Massidda L., 2008.
+ \emph{Armando, a SPH code for CERN}.
+ Tech. Rep., CERN Geneva.
+
+\bibitem{Massidda10} Massidda L., Kadi Y., 2010.
+ \emph{SPH simulation of liquid metal target dynamics}.
+ Nuclear Engineering nd Design, 240, pp. 940--946.
+
+\bibitem{Massidda11} Massidda L., 2011.
+ \emph{THINS project: Intermediary report on the SPH code parallelization and validation for free surface }.
+ THINS project report, CRS4
+
+\bibitem{MMC11} Massidda L., Moreau V., Class A., 2011.
+ \emph{Free Surface and Splashing simulation of a windowless target concept for ESS}.
+ 4th High Power Targetry Workshop - Malmö
+
+\bibitem{Monaghan85} Monaghan J., Lattanzio J., 1985.
+ \emph{A refined particle method for astrophysical problems}.
+ Astronomy and Asrophysics, 149, pp. 135--143.
+
+\bibitem{Monaghan92} Monaghan J., 1992.
+ \emph{Smoothed particle hydrodynamics}.
+ Anna. Rev. Astron. Physics, Vol. 30, 543.
+
+\bibitem{Monaghan94} Monaghan J., 1994.
+ \emph{Simulating free surface flow sith SPH}.
+ Journal of Computational Physics, 110, pp. 399--406.
+ 
+\bibitem{Noah10} Noah E., 2010. 
+ \emph{Energy deposition, ESS-Windowless Gun Target}. ESS project report ref. 1082924V0.1
+ 
+\bibitem{Nyland07} Nyland L., Harris M., Prins J., 2007.
+ \emph{Fast N-Body Simulation with CUDA}.
+ GPU Gems 3, Addison Wesley.
+ 
+\bibitem{Sievers74} Sievers P., 1974.
+ \emph{Elastic Stress Waves In Matter Due To Rapid Heating By An Intense High-Energy Particle Beam}.
+ CERN report
+
+\end{thebibliography}
+
+\end{document}

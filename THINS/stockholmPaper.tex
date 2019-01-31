@@ -1,0 +1,22 @@
+\documentclass[11pt]{article}
+%Gummi|063|=)
+\title{Transient simulation of a windowless spallation target with Armando}
+\author{Luca Massidda\\
+		CRS4 - Italy}
+\date{\today}
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+The Smoothed Particle Hydrodynamic is a mesh-less method, it adopts a Lagrangian approach and describes the fluid as a set of mutually interacting particles, whose motion describes realistically and with good accuracy the motion of fluids, in particular when free surface conditions are present, without any limit on the density ratio. The fluid is treated as compressible, and this allows to simulate realistically the formation and propagation of acoustic pressure waves due to the interaction with a beam.
+
+The SPH approach, while rather new as an engineering tool, has already been applied to water wave breaking, dam collapse, water jets, or impact of projectiles as referred in literature. It is not competitive with the traditional CFD methods when closed domains are analysed, mainly due to relatively poor efficiency of the algorithm in a CPU architecture. The method is in fact well suited for massively parallel architectures, and the recent interest and popularity of GPU machines has brought much attentions to methods of this kind.
+
+Armando is an SPH code, developed at CRS4 in cooperation with CERN and has already been applied with success to the simulation of liquid and solid targets with beam interaction. In the framework of the THINS project, the code has been ported on GPU architecture. This task required the code to be almost entirely rewritten to take full advantage of the different hardware. The speed-up obtained with respect to a single CPU is above 60x, therefore allowing very high resolution analyses on common desktop hardware.
+
+The improved technology is applied to the simulation of a liquid metal free surface target that has been recently proposed for the ESS project. The results of free surface stability analysis in relatively long times are illustrated as well as the quick transient phenomena and the pressure waves due to the beam power deposition.
+
+\end{abstract}
+
+\end{document}

@@ -1,0 +1,673 @@
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012/Debian) (format=pdflatex 2012.11.12)  7 JAN 2013 17:43
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**stockholmCRS4.tex
+(./stockholmCRS4.tex
+LaTeX2e <2011/06/27>
+Babel <v3.8m> and hyphenation patterns for english, dumylang, nohyphenation, lo
+aded.
+(/usr/share/texlive/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2007/10/19 v1.4h Standard LaTeX document class
+(/usr/share/texlive/texmf-dist/tex/latex/base/size11.clo
+File: size11.clo 2007/10/19 v1.4h Standard LaTeX file (size option)
+)
+\c@part=\count79
+\c@section=\count80
+\c@subsection=\count81
+\c@subsubsection=\count82
+\c@paragraph=\count83
+\c@subparagraph=\count84
+\c@figure=\count85
+\c@table=\count86
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\bibindent=\dimen102
+)
+(/usr/share/texlive/texmf-dist/tex/latex/preprint/fullpage.sty
+Package: fullpage 1999/02/23 1.1 (PWD)
+\FP@margin=\skip43
+)
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/graphicx.sty
+Package: graphicx 1999/02/16 v1.0f Enhanced LaTeX Graphics (DPC,SPQR)
+
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/keyval.sty
+Package: keyval 1999/03/16 v1.13 key=value parser (DPC)
+\KV@toks@=\toks14
+)
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/graphics.sty
+Package: graphics 2009/02/05 v1.0o Standard LaTeX Graphics (DPC,SPQR)
+
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/trig.sty
+Package: trig 1999/03/16 v1.09 sin cos tan (DPC)
+)
+(/usr/share/texlive/texmf-dist/tex/latex/latexconfig/graphics.cfg
+File: graphics.cfg 2010/04/23 v1.9 graphics configuration of TeX Live
+)
+Package graphics Info: Driver file: pdftex.def on input line 91.
+
+(/usr/share/texlive/texmf-dist/tex/latex/pdftex-def/pdftex.def
+File: pdftex.def 2011/05/27 v0.06d Graphics/color for pdfTeX
+
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/infwarerr.sty
+Package: infwarerr 2010/04/08 v1.3 Providing info/warning/error messages (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/ltxcmds.sty
+Package: ltxcmds 2011/11/09 v1.22 LaTeX kernel commands for general use (HO)
+)
+\Gread@gobject=\count87
+))
+\Gin@req@height=\dimen103
+\Gin@req@width=\dimen104
+)
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsmath.sty
+Package: amsmath 2000/07/18 v2.13 AMS math features
+\@mathmargin=\skip44
+
+For additional information on amsmath, use the `?' option.
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amstext.sty
+Package: amstext 2000/06/29 v2.01
+
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsgen.sty
+File: amsgen.sty 1999/11/30 v2.0
+\@emptytoks=\toks15
+\ex@=\dimen105
+))
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsbsy.sty
+Package: amsbsy 1999/11/29 v1.2d
+\pmbraise@=\dimen106
+)
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsopn.sty
+Package: amsopn 1999/12/14 v2.01 operator names
+)
+\inf@bad=\count88
+LaTeX Info: Redefining \frac on input line 211.
+\uproot@=\count89
+\leftroot@=\count90
+LaTeX Info: Redefining \overline on input line 307.
+\classnum@=\count91
+\DOTSCASE@=\count92
+LaTeX Info: Redefining \ldots on input line 379.
+LaTeX Info: Redefining \dots on input line 382.
+LaTeX Info: Redefining \cdots on input line 467.
+\Mathstrutbox@=\box26
+\strutbox@=\box27
+\big@size=\dimen107
+LaTeX Font Info:    Redeclaring font encoding OML on input line 567.
+LaTeX Font Info:    Redeclaring font encoding OMS on input line 568.
+\macc@depth=\count93
+\c@MaxMatrixCols=\count94
+\dotsspace@=\muskip10
+\c@parentequation=\count95
+\dspbrk@lvl=\count96
+\tag@help=\toks16
+\row@=\count97
+\column@=\count98
+\maxfields@=\count99
+\andhelp@=\toks17
+\eqnshift@=\dimen108
+\alignsep@=\dimen109
+\tagshift@=\dimen110
+\tagwidth@=\dimen111
+\totwidth@=\dimen112
+\lineht@=\dimen113
+\@envbody=\toks18
+\multlinegap=\skip45
+\multlinetaggap=\skip46
+\mathdisplay@stack=\toks19
+LaTeX Info: Redefining \[ on input line 2666.
+LaTeX Info: Redefining \] on input line 2667.
+)
+(/usr/share/texlive/texmf-dist/tex/generic/babel/babel.sty
+Package: babel 2008/07/08 v3.8m The Babel package
+
+(/usr/share/texlive/texmf-dist/tex/generic/babel/english.ldf
+Language: english 2005/03/30 v3.3o English support from the babel system
+
+(/usr/share/texlive/texmf-dist/tex/generic/babel/babel.def
+File: babel.def 2008/07/08 v3.8m Babel common definitions
+\babel@savecnt=\count100
+\U@D=\dimen114
+)
+\l@british = a dialect from \language\l@english 
+\l@UKenglish = a dialect from \language\l@english 
+\l@canadian = a dialect from \language\l@american 
+\l@australian = a dialect from \language\l@british 
+\l@newzealand = a dialect from \language\l@british 
+))
+(./stockholmCRS4.aux)
+\openout1 = `stockholmCRS4.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 8.
+LaTeX Font Info:    ... okay on input line 8.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 8.
+LaTeX Font Info:    ... okay on input line 8.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 8.
+LaTeX Font Info:    ... okay on input line 8.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 8.
+LaTeX Font Info:    ... okay on input line 8.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 8.
+LaTeX Font Info:    ... okay on input line 8.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 8.
+LaTeX Font Info:    ... okay on input line 8.
+
+(/usr/share/texlive/texmf-dist/tex/context/base/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count101
+\scratchdimen=\dimen115
+\scratchbox=\box28
+\nofMPsegments=\count102
+\nofMParguments=\count103
+\everyMPshowfont=\toks20
+\MPscratchCnt=\count104
+\MPscratchDim=\dimen116
+\MPnumerator=\count105
+\makeMPintoPDFobject=\count106
+\everyMPtoPDFconversion=\toks21
+) (/usr/share/texlive/texmf-dist/tex/generic/oberdiek/pdftexcmds.sty
+Package: pdftexcmds 2011/11/29 v0.20 Utility functions of pdfTeX for LuaTeX (HO
+)
+
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/ifluatex.sty
+Package: ifluatex 2010/03/01 v1.3 Provides the ifluatex switch (HO)
+Package ifluatex Info: LuaTeX not detected.
+)
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/ifpdf.sty
+Package: ifpdf 2011/01/30 v2.3 Provides the ifpdf switch (HO)
+Package ifpdf Info: pdfTeX in PDF mode is detected.
+)
+Package pdftexcmds Info: LuaTeX not detected.
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+Package pdftexcmds Info: \pdfdraftmode found.
+)
+(/usr/share/texlive/texmf-dist/tex/latex/oberdiek/epstopdf-base.sty
+Package: epstopdf-base 2010/02/09 v2.5 Base part for package epstopdf
+
+(/usr/share/texlive/texmf-dist/tex/latex/oberdiek/grfext.sty
+Package: grfext 2010/08/19 v1.1 Manage graphics extensions (HO)
+
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/kvdefinekeys.sty
+Package: kvdefinekeys 2011/04/07 v1.3 Define keys (HO)
+))
+(/usr/share/texlive/texmf-dist/tex/latex/oberdiek/kvoptions.sty
+Package: kvoptions 2011/06/30 v3.11 Key value format for package options (HO)
+
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/kvsetkeys.sty
+Package: kvsetkeys 2012/04/25 v1.16 Key value parser (HO)
+
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/etexcmds.sty
+Package: etexcmds 2011/02/16 v1.5 Avoid name clashes with e-TeX commands (HO)
+Package etexcmds Info: Could not find \expanded.
+(etexcmds)             That can mean that you are not using pdfTeX 1.50 or
+(etexcmds)             that some package has redefined \expanded.
+(etexcmds)             In the latter case, load this package earlier.
+)))
+Package grfext Info: Graphics extension search list:
+(grfext)             [.png,.pdf,.jpg,.mps,.jpeg,.jbig2,.jb2,.PNG,.PDF,.JPG,.JPE
+G,.JBIG2,.JB2,.eps]
+(grfext)             \AppendGraphicsExtensions on input line 452.
+
+(/usr/share/texlive/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
+File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
+e
+))
+[1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}
+
+
+]
+Underfull \hbox (badness 2326) in paragraph at lines 71--72
+\OT1/cmr/m/n/10.95 An ex-plicit time in-te-gra-tion pro-ce-dure is
+ []
+
+[2]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [3]
+Underfull \hbox (badness 2521) in paragraph at lines 131--131
+[]\OT1/cmr/bx/n/12 Outlet bound-ary and out of
+ []
+
+<Pictures/model1.png, id=25, 959.08313pt x 526.96875pt>
+File: Pictures/model1.png Graphic file (type png)
+
+<use Pictures/model1.png>
+Package pdftex.def Info: Pictures/model1.png used on input line 139.
+(pdftex.def)             Requested size: 407.66833pt x 223.99493pt.
+
+<Pictures/model2.png, id=26, 908.64468pt x 320.69812pt>
+File: Pictures/model2.png Graphic file (type png)
+
+<use Pictures/model2.png>
+Package pdftex.def Info: Pictures/model2.png used on input line 140.
+(pdftex.def)             Requested size: 407.66833pt x 143.88219pt.
+ [4] [5 <./Pictures/model1.png> <./Pictures/model2.png>]
+Underfull \vbox (badness 1383) has occurred while \output is active []
+
+
+Underfull \hbox (badness 3492) in paragraph at lines 237--238
+[]\OT1/cmr/m/n/10.95 It is as-sumed a ref-er-ence tem-per-a-ture
+ []
+
+
+Underfull \hbox (badness 1917) in paragraph at lines 237--238
+\OT1/cmr/m/n/10.95 of $573\OML/cmm/m/it/10.95 K$\OT1/cmr/m/n/10.95 , for which 
+the den-sity value is
+ []
+
+[6] [7] <Pictures/Init10.png, id=43, 1253.68375pt x 810.02625pt>
+File: Pictures/Init10.png Graphic file (type png)
+
+<use Pictures/Init10.png>
+Package pdftex.def Info: Pictures/Init10.png used on input line 284.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/Init20.png, id=44, 1253.68375pt x 810.02625pt>
+File: Pictures/Init20.png Graphic file (type png)
+
+<use Pictures/Init20.png>
+Package pdftex.def Info: Pictures/Init20.png used on input line 285.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/Init30.png, id=45, 1253.68375pt x 810.02625pt>
+File: Pictures/Init30.png Graphic file (type png)
+
+<use Pictures/Init30.png>
+Package pdftex.def Info: Pictures/Init30.png used on input line 288.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/Init40.png, id=46, 1253.68375pt x 810.02625pt>
+File: Pictures/Init40.png Graphic file (type png)
+
+<use Pictures/Init40.png>
+Package pdftex.def Info: Pictures/Init40.png used on input line 289.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/Heating1.png, id=47, 1253.68375pt x 810.02625pt>
+File: Pictures/Heating1.png Graphic file (type png)
+
+<use Pictures/Heating1.png>
+Package pdftex.def Info: Pictures/Heating1.png used on input line 307.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/Heating2.png, id=48, 1253.68375pt x 810.02625pt>
+File: Pictures/Heating2.png Graphic file (type png)
+
+<use Pictures/Heating2.png>
+Package pdftex.def Info: Pictures/Heating2.png used on input line 308.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/Heating3.png, id=49, 1253.68375pt x 810.02625pt>
+File: Pictures/Heating3.png Graphic file (type png)
+
+<use Pictures/Heating3.png>
+Package pdftex.def Info: Pictures/Heating3.png used on input line 311.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/Heating4.png, id=50, 1253.68375pt x 810.02625pt>
+File: Pictures/Heating4.png Graphic file (type png)
+
+<use Pictures/Heating4.png>
+Package pdftex.def Info: Pictures/Heating4.png used on input line 312.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+ [8]
+<Pictures/mfr125.png, id=54, 1253.68375pt x 810.02625pt>
+File: Pictures/mfr125.png Graphic file (type png)
+
+<use Pictures/mfr125.png>
+Package pdftex.def Info: Pictures/mfr125.png used on input line 336.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/mfr150.png, id=55, 1253.68375pt x 810.02625pt>
+File: Pictures/mfr150.png Graphic file (type png)
+
+<use Pictures/mfr150.png>
+Package pdftex.def Info: Pictures/mfr150.png used on input line 337.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/mfr175.png, id=56, 1253.68375pt x 810.02625pt>
+File: Pictures/mfr175.png Graphic file (type png)
+
+<use Pictures/mfr175.png>
+Package pdftex.def Info: Pictures/mfr175.png used on input line 340.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/mfr200.png, id=57, 1253.68375pt x 810.02625pt>
+File: Pictures/mfr200.png Graphic file (type png)
+
+<use Pictures/mfr200.png>
+Package pdftex.def Info: Pictures/mfr200.png used on input line 341.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+ [9 <./Pictures/Init10.png (PNG copy)> <./Pictures/Init20.png (PNG copy)> <./Pi
+ctures/Init30.png (PNG copy)> <./Pictures/Init40.png (PNG copy)>] <Pictures/Hea
+tingF1.png, id=61, 1253.68375pt x 810.02625pt>
+File: Pictures/HeatingF1.png Graphic file (type png)
+
+<use Pictures/HeatingF1.png>
+Package pdftex.def Info: Pictures/HeatingF1.png used on input line 357.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/HeatingF2.png, id=62, 1253.68375pt x 810.02625pt>
+File: Pictures/HeatingF2.png Graphic file (type png)
+
+<use Pictures/HeatingF2.png>
+Package pdftex.def Info: Pictures/HeatingF2.png used on input line 358.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/HeatingF3.png, id=63, 1253.68375pt x 810.02625pt>
+File: Pictures/HeatingF3.png Graphic file (type png)
+
+<use Pictures/HeatingF3.png>
+Package pdftex.def Info: Pictures/HeatingF3.png used on input line 361.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/HeatingF4.png, id=64, 1253.68375pt x 810.02625pt>
+File: Pictures/HeatingF4.png Graphic file (type png)
+
+<use Pictures/HeatingF4.png>
+Package pdftex.def Info: Pictures/HeatingF4.png used on input line 362.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/loop20.png, id=65, 1253.68375pt x 810.02625pt>
+File: Pictures/loop20.png Graphic file (type png)
+
+<use Pictures/loop20.png>
+Package pdftex.def Info: Pictures/loop20.png used on input line 376.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/loop30.png, id=66, 1253.68375pt x 810.02625pt>
+File: Pictures/loop30.png Graphic file (type png)
+
+<use Pictures/loop30.png>
+Package pdftex.def Info: Pictures/loop30.png used on input line 377.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/loop40.png, id=67, 1253.68375pt x 810.02625pt>
+File: Pictures/loop40.png Graphic file (type png)
+
+<use Pictures/loop40.png>
+Package pdftex.def Info: Pictures/loop40.png used on input line 380.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/loop50.png, id=68, 1253.68375pt x 810.02625pt>
+File: Pictures/loop50.png Graphic file (type png)
+
+<use Pictures/loop50.png>
+Package pdftex.def Info: Pictures/loop50.png used on input line 381.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+Underfull \vbox (badness 1975) has occurred while \output is active []
+
+ [10 <./Pictures/Heating1.png (PNG copy)> <./Pictures/Heating2.png (PNG copy)> 
+<./Pictures/Heating3.png (PNG copy)> <./Pictures/Heating4.png (PNG copy)>]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+
+<Pictures/ShortN01.png, id=72, 1253.68375pt x 810.02625pt>
+File: Pictures/ShortN01.png Graphic file (type png)
+
+<use Pictures/ShortN01.png>
+Package pdftex.def Info: Pictures/ShortN01.png used on input line 406.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/ShortN02.png, id=73, 1253.68375pt x 810.02625pt>
+File: Pictures/ShortN02.png Graphic file (type png)
+
+<use Pictures/ShortN02.png>
+Package pdftex.def Info: Pictures/ShortN02.png used on input line 407.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/ShortN03.png, id=74, 1253.68375pt x 810.02625pt>
+File: Pictures/ShortN03.png Graphic file (type png)
+
+<use Pictures/ShortN03.png>
+Package pdftex.def Info: Pictures/ShortN03.png used on input line 410.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/ShortN04.png, id=75, 1253.68375pt x 810.02625pt>
+File: Pictures/ShortN04.png Graphic file (type png)
+
+<use Pictures/ShortN04.png>
+Package pdftex.def Info: Pictures/ShortN04.png used on input line 411.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/ShortN05.png, id=76, 1253.68375pt x 810.02625pt>
+File: Pictures/ShortN05.png Graphic file (type png)
+
+<use Pictures/ShortN05.png>
+Package pdftex.def Info: Pictures/ShortN05.png used on input line 414.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/ShortN06.png, id=77, 1253.68375pt x 810.02625pt>
+File: Pictures/ShortN06.png Graphic file (type png)
+
+<use Pictures/ShortN06.png>
+Package pdftex.def Info: Pictures/ShortN06.png used on input line 415.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/ShortN07.png, id=78, 1253.68375pt x 810.02625pt>
+File: Pictures/ShortN07.png Graphic file (type png)
+
+<use Pictures/ShortN07.png>
+Package pdftex.def Info: Pictures/ShortN07.png used on input line 418.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/ShortN08.png, id=79, 1253.68375pt x 810.02625pt>
+File: Pictures/ShortN08.png Graphic file (type png)
+
+<use Pictures/ShortN08.png>
+Package pdftex.def Info: Pictures/ShortN08.png used on input line 419.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+Underfull \vbox (badness 2726) has occurred while \output is active []
+
+ [11 <./Pictures/mfr125.png (PNG copy)> <./Pictures/mfr150.png (PNG copy)> <./P
+ictures/mfr175.png (PNG copy)> <./Pictures/mfr200.png (PNG copy)>]
+<Pictures/ShortC01.png, id=83, 1253.68375pt x 810.02625pt>
+File: Pictures/ShortC01.png Graphic file (type png)
+
+<use Pictures/ShortC01.png>
+Package pdftex.def Info: Pictures/ShortC01.png used on input line 433.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/ShortC02.png, id=84, 1253.68375pt x 810.02625pt>
+File: Pictures/ShortC02.png Graphic file (type png)
+
+<use Pictures/ShortC02.png>
+Package pdftex.def Info: Pictures/ShortC02.png used on input line 434.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/ShortC03.png, id=85, 1253.68375pt x 810.02625pt>
+File: Pictures/ShortC03.png Graphic file (type png)
+
+<use Pictures/ShortC03.png>
+Package pdftex.def Info: Pictures/ShortC03.png used on input line 437.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/ShortC04.png, id=86, 1253.68375pt x 810.02625pt>
+File: Pictures/ShortC04.png Graphic file (type png)
+
+<use Pictures/ShortC04.png>
+Package pdftex.def Info: Pictures/ShortC04.png used on input line 438.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/ShortC05.png, id=87, 1253.68375pt x 810.02625pt>
+File: Pictures/ShortC05.png Graphic file (type png)
+
+<use Pictures/ShortC05.png>
+Package pdftex.def Info: Pictures/ShortC05.png used on input line 441.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/ShortC06.png, id=88, 1253.68375pt x 810.02625pt>
+File: Pictures/ShortC06.png Graphic file (type png)
+
+<use Pictures/ShortC06.png>
+Package pdftex.def Info: Pictures/ShortC06.png used on input line 442.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/ShortC07.png, id=89, 1253.68375pt x 810.02625pt>
+File: Pictures/ShortC07.png Graphic file (type png)
+
+<use Pictures/ShortC07.png>
+Package pdftex.def Info: Pictures/ShortC07.png used on input line 445.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/ShortC08.png, id=90, 1253.68375pt x 810.02625pt>
+File: Pictures/ShortC08.png Graphic file (type png)
+
+<use Pictures/ShortC08.png>
+Package pdftex.def Info: Pictures/ShortC08.png used on input line 446.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/LongCE01.png, id=91, 1253.68375pt x 810.02625pt>
+File: Pictures/LongCE01.png Graphic file (type png)
+
+<use Pictures/LongCE01.png>
+Package pdftex.def Info: Pictures/LongCE01.png used on input line 464.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/LongCV01.png, id=92, 1253.68375pt x 810.02625pt>
+File: Pictures/LongCV01.png Graphic file (type png)
+
+<use Pictures/LongCV01.png>
+Package pdftex.def Info: Pictures/LongCV01.png used on input line 465.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/LongCE25.png, id=93, 1253.68375pt x 810.02625pt>
+File: Pictures/LongCE25.png Graphic file (type png)
+
+<use Pictures/LongCE25.png>
+Package pdftex.def Info: Pictures/LongCE25.png used on input line 468.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/LongCV25.png, id=94, 1253.68375pt x 810.02625pt>
+File: Pictures/LongCV25.png Graphic file (type png)
+
+<use Pictures/LongCV25.png>
+Package pdftex.def Info: Pictures/LongCV25.png used on input line 469.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/LongCE51.png, id=95, 1253.68375pt x 810.02625pt>
+File: Pictures/LongCE51.png Graphic file (type png)
+
+<use Pictures/LongCE51.png>
+Package pdftex.def Info: Pictures/LongCE51.png used on input line 472.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/LongCV51.png, id=96, 1253.68375pt x 810.02625pt>
+File: Pictures/LongCV51.png Graphic file (type png)
+
+<use Pictures/LongCV51.png>
+Package pdftex.def Info: Pictures/LongCV51.png used on input line 473.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/LongCE76.png, id=97, 1253.68375pt x 810.02625pt>
+File: Pictures/LongCE76.png Graphic file (type png)
+
+<use Pictures/LongCE76.png>
+Package pdftex.def Info: Pictures/LongCE76.png used on input line 476.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/LongCV76.png, id=98, 1253.68375pt x 810.02625pt>
+File: Pictures/LongCV76.png Graphic file (type png)
+
+<use Pictures/LongCV76.png>
+Package pdftex.def Info: Pictures/LongCV76.png used on input line 477.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/LongH001.png, id=99, 1253.68375pt x 810.02625pt>
+File: Pictures/LongH001.png Graphic file (type png)
+
+<use Pictures/LongH001.png>
+Package pdftex.def Info: Pictures/LongH001.png used on input line 491.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/LongH021.png, id=100, 1253.68375pt x 810.02625pt>
+File: Pictures/LongH021.png Graphic file (type png)
+
+<use Pictures/LongH021.png>
+Package pdftex.def Info: Pictures/LongH021.png used on input line 492.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/LongH041.png, id=101, 1253.68375pt x 810.02625pt>
+File: Pictures/LongH041.png Graphic file (type png)
+
+<use Pictures/LongH041.png>
+Package pdftex.def Info: Pictures/LongH041.png used on input line 495.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/LongH061.png, id=102, 1253.68375pt x 810.02625pt>
+File: Pictures/LongH061.png Graphic file (type png)
+
+<use Pictures/LongH061.png>
+Package pdftex.def Info: Pictures/LongH061.png used on input line 496.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/LongH081.png, id=103, 1253.68375pt x 810.02625pt>
+File: Pictures/LongH081.png Graphic file (type png)
+
+<use Pictures/LongH081.png>
+Package pdftex.def Info: Pictures/LongH081.png used on input line 499.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+<Pictures/LongH100.png, id=104, 1253.68375pt x 810.02625pt>
+File: Pictures/LongH100.png Graphic file (type png)
+
+<use Pictures/LongH100.png>
+Package pdftex.def Info: Pictures/LongH100.png used on input line 500.
+(pdftex.def)             Requested size: 203.83417pt x 131.69568pt.
+
+Underfull \vbox (badness 1975) has occurred while \output is active []
+
+ [12 <./Pictures/HeatingF1.png (PNG copy)> <./Pictures/HeatingF2.png (PNG copy)
+> <./Pictures/HeatingF3.png (PNG copy)> <./Pictures/HeatingF4.png (PNG copy)>] 
+[13 <./Pictures/loop20.png (PNG copy)> <./Pictures/loop30.png (PNG copy)> <./Pi
+ctures/loop40.png (PNG copy)> <./Pictures/loop50.png (PNG copy)>]
+Missing character: There is no Ã in font cmr10!
+Missing character: There is no ¶ in font cmr10!
+ [14] [15 <./Pictures/ShortN01.png (PNG copy)> <./Pictures/ShortN02.png (PNG co
+py)> <./Pictures/ShortN03.png (PNG copy)> <./Pictures/ShortN04.png (PNG copy)> 
+<./Pictures/ShortN05.png (PNG copy)> <./Pictures/ShortN06.png (PNG copy)> <./Pi
+ctures/ShortN07.png (PNG copy)> <./Pictures/ShortN08.png (PNG copy)>] [16 <./Pi
+ctures/ShortC01.png (PNG copy)> <./Pictures/ShortC02.png (PNG copy)> <./Picture
+s/ShortC03.png (PNG copy)> <./Pictures/ShortC04.png (PNG copy)> <./Pictures/Sho
+rtC05.png (PNG copy)> <./Pictures/ShortC06.png (PNG copy)> <./Pictures/ShortC07
+.png (PNG copy)> <./Pictures/ShortC08.png (PNG copy)>] [17 <./Pictures/LongCE01
+.png (PNG copy)> <./Pictures/LongCV01.png (PNG copy)> <./Pictures/LongCE25.png 
+(PNG copy)> <./Pictures/LongCV25.png (PNG copy)> <./Pictures/LongCE51.png (PNG 
+copy)> <./Pictures/LongCV51.png (PNG copy)> <./Pictures/LongCE76.png (PNG copy)
+> <./Pictures/LongCV76.png (PNG copy)>] [18 <./Pictures/LongH001.png (PNG copy)
+> <./Pictures/LongH021.png (PNG copy)> <./Pictures/LongH041.png (PNG copy)> <./
+Pictures/LongH061.png (PNG copy)> <./Pictures/LongH081.png (PNG copy)> <./Pictu
+res/LongH100.png (PNG copy)>] (./stockholmCRS4.aux) ) 
+Here is how much of TeX's memory you used:
+ 2721 strings out of 495059
+ 38388 string characters out of 3182029
+ 103127 words of memory out of 3000000
+ 5823 multiletter control sequences out of 15000+200000
+ 12057 words of font info for 43 fonts, out of 3000000 for 9000
+ 14 hyphenation exceptions out of 8191
+ 38i,18n,23p,763b,305s stack positions out of 5000i,500n,10000p,200000b,50000s
+</usr/share/texlive/texmf-
+dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/share/texlive/texmf-dist/f
+onts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/texlive/texmf-dist/fonts/t
+ype1/public/amsfonts/cm/cmbx8.pfb></usr/share/texlive/texmf-dist/fonts/type1/pu
+blic/amsfonts/cm/cmex10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/a
+msfonts/cmextra/cmex8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/ams
+fonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/
+cm/cmmi6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi
+8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb><
+/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/sh
+are/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/share/tex
+live/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/share/texlive/tex
+mf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/
+fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/
+type1/public/amsfonts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/p
+ublic/amsfonts/cm/cmti10.pfb>
+Output written on stockholmCRS4.pdf (18 pages, 9017006 bytes).
+PDF statistics:
+ 178 PDF objects out of 1000 (max. 8388607)
+ 89 compressed objects within 1 object stream
+ 0 named destinations out of 1000 (max. 500000)
+ 261 words of extra memory for PDF output out of 10000 (max. 10000000)
+
